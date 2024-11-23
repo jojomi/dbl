@@ -2,10 +2,6 @@ parameters:
     level: max
     paths:
         - src
-    excludePaths:
-        - src/Test.php
-    stubFiles:
-        - stubs/Container.stub
 
 includes:
 	- phar://phpstan.phar/conf/bleedingEdge.neon
