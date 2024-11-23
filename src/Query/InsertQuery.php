@@ -123,7 +123,10 @@ abstract class InsertQuery extends BaseQuery
                     $value !== null
                 ) {
                     throw new InvalidArgumentException(
-                        sprintf('The value must be of type float, int, string, Stringable, or null. %s given.', gettype($value))
+                        sprintf(
+                            'The value must be of type float, int, string, Stringable, or null. %s given.',
+                            gettype($value),
+                        ),
                     );
                 }
 

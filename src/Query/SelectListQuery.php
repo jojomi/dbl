@@ -4,8 +4,8 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Typer\Arry;
 use Jojomi\Dbl\Client;
+use Jojomi\Typer\Arry;
 use PDO;
 use PDOException;
 use RuntimeException;
