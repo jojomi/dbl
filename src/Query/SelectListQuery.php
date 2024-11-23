@@ -29,7 +29,7 @@ abstract class SelectListQuery extends BaseQuery
     abstract protected function parseRow(array $rowData, Client $client);
 
     /**
-     * @phpstan-return array<T>
+     * @phpstan-return list<T>
      */
     public function executeRaw(Client $client): array
     {
