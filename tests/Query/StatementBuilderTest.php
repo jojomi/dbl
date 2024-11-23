@@ -33,7 +33,7 @@ class StatementBuilderTest extends TestCase
     }
 
     /**
-     * @return iterable<int, array{0: \App\Database\Statement\Statement, 1: string}>
+     * @return iterable<int, array{0: \Jojomi\Dbl\Statement\Statement, 1: string}>
      */
     public static function provideRender(): iterable
     {

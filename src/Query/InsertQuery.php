@@ -4,7 +4,9 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
+use InvalidArgumentException;
 use Jojomi\Dbl\Client;
+use Stringable;
 use function array_flip;
 use function array_intersect_key;
 use function array_map;
@@ -113,6 +115,18 @@ abstract class InsertQuery extends BaseQuery
         for ($row = 0; $row < count($this->rows); $row++) {
             $rowData = array_intersect_key($this->rows[$row], array_flip($this->fields));
             foreach ($rowData as $field => $value) {
+                if (
+                    !is_int($value) &&
+                    !is_float($value) &&
+                    !is_string($value) &&
+                    !$value instanceof Stringable &&
+                    $value !== null
+                ) {
+                    throw new InvalidArgumentException(
+                        sprintf('The value must be of type float, int, string, Stringable, or null. %s given.', gettype($value))
+                    );
+                }
+
                 $this->addParam($field . ($row+1), $value);
             }
         }

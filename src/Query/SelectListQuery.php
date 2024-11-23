@@ -4,8 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use App\Data\Arry;
-use App\Exception\AppException;
+use Jojomi\Typer\Arry;
 use Jojomi\Dbl\Client;
 use PDO;
 use PDOException;
@@ -17,7 +16,7 @@ use function sprintf;
  *
  * @template T
  *
- * @extends \Jojomi\Dbl\Query\BaseQuery<\App\Data\Lst<T>>
+ * @extends \Jojomi\Dbl\Query\BaseQuery<list<T>>
  */
 abstract class SelectListQuery extends BaseQuery
 {
@@ -49,12 +48,13 @@ abstract class SelectListQuery extends BaseQuery
                 $result[] = $element;
             }
         } catch (PDOException $x) {
-            throw new AppException(
-                sprintf('%s: %s', static::class, $x->getMessage()), context: [
-                'params' => $this->params,
-                'query' => $this->getQuery(),
-                ], previous: $x,
-            );
+            throw new RuntimeException(sprintf(
+                '%s: %s, query: %s, params %s',
+                static::class,
+                $x->getMessage(),
+                $this->getQuery(),
+                json_encode($this->params) ?: '?',
+            ));
         } finally {
             $client->closeConnection();
         }
