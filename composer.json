@@ -1,0 +1,40 @@
+{
+  "name": "jojomi/dbl",
+  "description": "A very minimal PHP PDO database layer.",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "jojomi",
+      "email": "dev.jojomi@yahoo.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.2",
+    "ext-pdo": "*",
+    "jojomi/typer": "^0.1",
+    "webmozart/assert": "^1.11"
+  },
+  "require-dev": {
+    "phpstan/extension-installer": "^1.4",
+    "phpstan/phpstan-deprecation-rules": "^2.0",
+    "phpunit/phpunit": "^11.4",
+    "slevomat/coding-standard": "^8.15"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jojomi\\Dbl\\": "src/",
+      "Jojomi\\Dbl\\Tests\\": "tests/"
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "phpstan/extension-installer": true
+    }
+  }
+}
