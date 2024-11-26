@@ -35,7 +35,7 @@ abstract class CountQuery extends SelectSingleQuery
     {
         return StatementBuilder::select()
             ->from($this->getTable())
-            ->fields(Field::create('COUNT(`id`)', 'count', raw: true));
+            ->fields(Field::create('COUNT(*)', 'count', raw: true));
     }
 
     /**
