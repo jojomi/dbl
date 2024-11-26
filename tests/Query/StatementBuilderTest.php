@@ -11,9 +11,12 @@ use Jojomi\Dbl\Statement\Eq;
 use Jojomi\Dbl\Statement\Field;
 use Jojomi\Dbl\Statement\FieldComparisonParam;
 use Jojomi\Dbl\Statement\In;
+use Jojomi\Dbl\Statement\IsNotNull;
+use Jojomi\Dbl\Statement\IsNull;
 use Jojomi\Dbl\Statement\Join;
 use Jojomi\Dbl\Statement\JoinType;
 use Jojomi\Dbl\Statement\NamedParam;
+use Jojomi\Dbl\Statement\NotIn;
 use Jojomi\Dbl\Statement\OrCondition;
 use Jojomi\Dbl\Statement\Order;
 use Jojomi\Dbl\Statement\OrderType;
@@ -168,6 +171,14 @@ class StatementBuilderTest extends TestCase
             StatementBuilder::select()
                 ->fromLocked('articles')
                 ->fields('id')
+                ->where(NotIn::create('name', ['ab', 2])),
+            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`name` NOT IN ('ab', 2);",
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->fromLocked('articles')
+                ->fields('id')
                 ->where(Eq::of('id', 1)),
             "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1;",
         ];
@@ -204,6 +215,15 @@ class StatementBuilderTest extends TestCase
                 ->where(Eq::of('id', 1))
                 ->where(OrCondition::create(Eq::of('id', 17), Eq::of('name', 'Adam'))),
             "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1 AND (`articles`.`id` = 17 OR `articles`.`name` = 'Adam');",
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->fromLocked('articles')
+                ->fields('id')
+                ->where(IsNotNull::of('id'))
+                ->where(IsNull::of('name')),
+            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` IS NOT NULL AND `articles`.`name` IS NULL;",
         ];
 
         yield [
