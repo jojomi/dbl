@@ -60,6 +60,11 @@ readonly class Field
         return sprintf('%s%s', $tableString, $this->alias !== null ? $this->escape($this->alias) : $this->getName());
     }
 
+    public function getRawName(): string
+    {
+        return $this->name;
+    }
+
     public function getTable(): ?Table
     {
         return $this->table;
