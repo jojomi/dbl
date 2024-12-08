@@ -58,4 +58,12 @@ class FieldTest extends TestCase
         $this->assertSame('COUNT(*)', $field->getDefinition());
         $field->getAccessor();
     }
+
+    public function testCreateWithDotInName(): void
+    {
+        $field = Field::create('table.name');
+        $this->assertInstanceOf(Field::class, $field);
+        $this->assertSame('`table`.`name`', $field->getDefinition());
+        $this->assertSame('`table`.`name`', $field->getAccessor());
+    }
 }

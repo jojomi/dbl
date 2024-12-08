@@ -5,6 +5,8 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
+use function explode;
+use function is_string;
 use function sprintf;
 
 /**
@@ -22,6 +24,11 @@ readonly class Field
     {
         if (!is_string($name)) {
             return $name;
+        } else {
+            if (!$raw && str_contains($name, '.')) {
+                $table = explode('.', $name)[0];
+                $name = explode('.', $name)[1];
+            }
         }
         if (is_string($table)) {
             $table = Table::create($table);
