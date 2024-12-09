@@ -24,11 +24,11 @@ readonly class Field
     {
         if (!is_string($name)) {
             return $name;
-        } else {
-            if (!$raw && str_contains($name, '.')) {
-                $table = explode('.', $name)[0];
-                $name = explode('.', $name)[1];
-            }
+        }
+
+        if (!$raw && str_contains($name, '.')) {
+            $table = explode('.', $name)[0];
+            $name = explode('.', $name)[1];
         }
         if (is_string($table)) {
             $table = Table::create($table);
@@ -79,7 +79,7 @@ readonly class Field
 
     public function withTable(Table $table): self
     {
-        return new self(name: $this->name, alias: $this->alias, table: $table, raw: $this->raw);
+        return new self(name: $this->name, alias: $this->alias, table: $this->table ?? $table, raw: $this->raw);
     }
 
     private function getName(): string
