@@ -14,27 +14,29 @@ use function is_string;
 final class SelectStatement implements Statement
 {
     /**
-     * @var array<\Jojomi\Dbl\Statement\Table> $from 
+     * @var array<\Jojomi\Dbl\Statement\Table> $from
      */
     private array $from = [];
 
+    private bool $distinct = false;
+
     /**
-     * @var array<\Jojomi\Dbl\Statement\Field> $fields 
+     * @var array<\Jojomi\Dbl\Statement\Field> $fields
      */
     private array $fields = [];
 
     /**
-     * @var array<\Jojomi\Dbl\Statement\Order> $orderBys 
+     * @var array<\Jojomi\Dbl\Statement\Order> $orderBys
      */
     private array $orderBys = [];
 
     /**
-     * @var array<\Jojomi\Dbl\Statement\GroupBy> $groupBys 
+     * @var array<\Jojomi\Dbl\Statement\GroupBy> $groupBys
      */
     private array $groupBys = [];
 
     /**
-     * @var array<\Jojomi\Dbl\Statement\Join> $joins 
+     * @var array<\Jojomi\Dbl\Statement\Join> $joins
      */
     private array $joins = [];
 
@@ -59,6 +61,7 @@ final class SelectStatement implements Statement
     public function distinct(bool $distinct = true): self
     {
         $this->distinct = $distinct;
+
         return $this;
     }
 
