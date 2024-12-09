@@ -56,6 +56,12 @@ final class SelectStatement implements Statement
         return new self();
     }
 
+    public function distinct(bool $distinct = true): self
+    {
+        $this->distinct = $distinct;
+        return $this;
+    }
+
     public function setCurrentTable(Table|string|null $currentTable): self
     {
         $this->currentTable = $currentTable === null ? null : Table::create($currentTable);
@@ -192,6 +198,9 @@ final class SelectStatement implements Statement
     public function render(bool $omitSemicolon = false): string
     {
         $s = 'SELECT ';
+        if ($this->distinct) {
+            $s .= 'DISTINCT ';
+        }
         $s .= implode(', ', array_map(static fn (Field $f) => $f->getDefinition(), $this->fields));
         $s .= ' FROM ';
         $s .= implode(', ', array_map(static fn (Table $t) => $t->getDefinition(), $this->from));

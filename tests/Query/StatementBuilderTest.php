@@ -84,6 +84,7 @@ class StatementBuilderTest extends TestCase
 
         yield [
             StatementBuilder::select()
+                ->distinct(false)
                 ->fromLocked(Table::create('articles'))
                 ->fields(Field::create('COUNT(`articles`.`id`)', raw: true)),
             'SELECT COUNT(`articles`.`id`) FROM `articles`;',
@@ -91,12 +92,20 @@ class StatementBuilderTest extends TestCase
 
         yield [
             StatementBuilder::select()
+                ->fromLocked(Table::create('articles'))
+                ->fields(Field::create('COUNT(`articles`.`id`)', raw: true)),
+            'SELECT COUNT(`articles`.`id`) FROM `articles`;',
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->distinct()
                 ->fromLocked(Table::create('articles', 'a'))
                 ->fields('id', 'name')
                 ->resetCurrentTable()
                 ->from(Table::create('names'))
                 ->fields('id'),
-            'SELECT `a`.`id`, `a`.`name`, `id` FROM `articles` `a`, `names`;',
+            'SELECT DISTINCT `a`.`id`, `a`.`name`, `id` FROM `articles` `a`, `names`;',
         ];
 
         yield [
