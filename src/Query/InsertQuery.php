@@ -69,16 +69,6 @@ abstract class InsertQuery extends BaseQuery
         return $this;
     }
 
-    protected function tableString(string $tableName): string
-    {
-        return sprintf('`%s`', $tableName);
-    }
-
-    protected function columnString(string $columnName): string
-    {
-        return sprintf('`%s`', $columnName);
-    }
-
     protected function getQuery(): string
     {
         return sprintf(
