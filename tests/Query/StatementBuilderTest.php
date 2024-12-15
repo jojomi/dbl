@@ -331,6 +331,44 @@ class StatementBuilderTest extends TestCase
                 ->groupBy('name', 'id'),
             'SELECT `articles`.`id` FROM `articles` GROUP BY `articles`.`name`, `articles`.`id`;',
         ];
+
+
+
+        yield [
+            StatementBuilder::delete()
+                ->fromLocked('articles')
+            ,
+            'DELETE FROM `articles`;',
+        ];
+
+        yield [
+            StatementBuilder::delete()
+                ->from('articles')
+                ->where(
+                    Comparison::of('id', ComparisonType::lessThanOrEqual, 142),
+                )
+            ,
+            'DELETE FROM `articles` WHERE `id` <= 142;',
+        ];
+
+        yield [
+            StatementBuilder::delete()
+                ->fromLocked('articles')
+                ->where(
+                    Comparison::of('id', ComparisonType::lessThan, 151),
+                )
+            ,
+            'DELETE FROM `articles` WHERE `articles`.`id` < 151;',
+        ];
+
+        yield [
+            StatementBuilder::delete()
+                ->from('articles')
+                ->orderBy(Order::create('id', OrderType::descending))
+                ->limit(3)
+            ,
+            'DELETE FROM `articles` ORDER BY `id` DESC LIMIT 3;',
+        ];
     }
 
 }

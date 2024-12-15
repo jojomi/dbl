@@ -18,4 +18,9 @@ final class StatementBuilder
     {
         return SelectStatement::create();
     }
+
+    public static function delete(): DeleteStatement
+    {
+        return DeleteStatement::create();
+    }
 }
