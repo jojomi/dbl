@@ -46,6 +46,24 @@ final class Client
         }
     }
 
+    public function beginTransaction(): self
+    {
+        $this->getConnection()->beginTransaction();
+        return $this;
+    }
+
+    public function commit(): self
+    {
+        $this->connection?->commit();
+        return $this;
+    }
+
+    public function rollBack(): self
+    {
+        $this->connection?->rollBack();
+        return $this;
+    }
+
     public function getConnection(): PDO
     {
         if ($this->connection !== null) {
