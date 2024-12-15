@@ -17,6 +17,7 @@ final class Client
 {
 
     private ?PDO $connection = null;
+    private int $transactionLevel = 0;
 
     public function __construct(private readonly Credentials $credentials, private readonly ?int $port = null)
     {
@@ -48,25 +49,51 @@ final class Client
 
     public function beginTransaction(): bool
     {
-        return $this->getConnection()->beginTransaction();
+        if ($this->transactionLevel > 0) {
+            $this->transactionLevel++;
+            return true;
+        }
+        $good = $this->getConnection()->beginTransaction();
+        if ($good === true) {
+            $this->transactionLevel++;
+        }
+        return $good;
     }
 
     public function commit(): bool
     {
+        if ($this->transactionLevel > 1) {
+            $this->transactionLevel--;
+            return true;
+        }
+
         $conn = $this->connection;
         if ($conn === null) {
             return false;
         }
-        return $conn->commit();
+        $good = $conn->commit();
+        if ($good === true) {
+            $this->transactionLevel--;
+        }
+        return $good;
     }
 
     public function rollBack(): bool
     {
+        if ($this->transactionLevel > 1) {
+            $this->transactionLevel--;
+            return true;
+        }
+
         $conn = $this->connection;
         if ($conn === null) {
             return false;
         }
-        return $conn->rollBack();
+        $good = $conn->rollBack();
+        if ($good === true) {
+            $this->transactionLevel--;
+        }
+        return $good;
     }
 
     public function getConnection(): PDO
