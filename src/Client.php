@@ -46,22 +46,27 @@ final class Client
         }
     }
 
-    public function beginTransaction(): self
+    public function beginTransaction(): bool
     {
-        $this->getConnection()->beginTransaction();
-        return $this;
+        return $this->getConnection()->beginTransaction();
     }
 
-    public function commit(): self
+    public function commit(): bool
     {
-        $this->connection?->commit();
-        return $this;
+        $conn = $this->connection;
+        if ($conn === null) {
+            return false;
+        }
+        return $conn->commit();
     }
 
-    public function rollBack(): self
+    public function rollBack(): bool
     {
-        $this->connection?->rollBack();
-        return $this;
+        $conn = $this->connection;
+        if ($conn === null) {
+            return false;
+        }
+        return $conn->rollBack();
     }
 
     public function getConnection(): PDO
