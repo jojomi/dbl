@@ -47,6 +47,13 @@ final class Client
         }
     }
 
+    public function resetTransactions(): void
+    {
+        while ($this->transactionLevel > 0) {
+            $this->rollBack();
+        }
+    }
+
     public function beginTransaction(): bool
     {
         if ($this->transactionLevel > 0) {
