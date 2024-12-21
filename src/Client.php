@@ -9,6 +9,7 @@ use PDO;
 use PDOException;
 use RuntimeException;
 use function getenv;
+use function sprintf;
 
 /**
  * Client.
@@ -43,7 +44,7 @@ final class Client
         try {
             return $query->execute($this);
         } catch (PDOException $e) {
-            throw new RuntimeException('Query failed: ' . $query, previous: $e);
+            throw new RuntimeException(sprintf("Query failed: %s\n%s", $e->getMessage(), $query), previous: $e);
         }
     }
 
