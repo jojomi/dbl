@@ -75,7 +75,7 @@ final class Client
             return true;
         }
 
-        $conn = $this->connection;
+        $conn = $this->getConnection();
         if ($conn === null) {
             return false;
         }
