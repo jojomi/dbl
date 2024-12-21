@@ -4,9 +4,11 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use InvalidArgumentException;
 use function array_map;
 use function implode;
 use function is_string;
+use function sprintf;
 
 /**
  * DeleteStatement.
@@ -33,6 +35,8 @@ final class DeleteStatement implements Statement
     private ?Condition $condition = null;
 
     private ?Table $currentTable = null;
+
+    private bool $all = false;
 
     private function __construct()
     {
@@ -88,6 +92,12 @@ final class DeleteStatement implements Statement
         return $this;
     }
 
+    public function all(): self
+    {
+        $this->all = true;
+        return $this;
+    }
+
     public function orderBy(Order ...$order): self
     {
         foreach ($order as $o) {
@@ -135,6 +145,13 @@ final class DeleteStatement implements Statement
 
     public function render(bool $omitSemicolon = false): string
     {
+        // safeguard
+        if (!$this->all && ($this->condition === null && $this->limit === null)) {
+            throw new InvalidArgumentException(
+                sprintf("SafeGuard: This query might delete all rows in %s. Either call all(), specify conditions using where(), or call limit()", implode(", ", array_map(static fn (Table $table) => $table->getDefinition(), $this->from))),
+            );
+        }
+
         $s = 'DELETE FROM ';
         $s .= implode(', ', array_map(static fn (Table $t) => $t->getDefinition(), $this->from));
         if (count($this->joins) > 0) {
