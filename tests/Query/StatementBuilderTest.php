@@ -380,6 +380,29 @@ class StatementBuilderTest extends TestCase
             ,
             'DELETE FROM `articles` WHERE `hour` IN (3, :last_hour);',
         ];
+
+
+        /*yield [
+            StatementBuilder::insert()
+                ->into('articles')
+                ->addRowWithFields([
+                    'title' => 'John Doe - My Memories',
+                ])
+            ,
+            'INSERT INTO `articles` (`title`) VALUES (\'John Doe - My Memories\')',
+        ];
+
+        yield [
+            StatementBuilder::insert()
+                ->into('articles')
+                ->fields('number')
+                ->addRow([
+                    'number' => NamedParam::create('number'),
+                    'unused_field' => 34,
+                ])
+            ,
+            'INSERT INTO `articles` (`number`) VALUES (:number_1)',
+        ];*/
     }
 
 }
