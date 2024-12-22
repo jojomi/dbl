@@ -26,7 +26,7 @@ abstract class DeleteQuery extends BaseQuery
         }
     }
 
-    protected function getQuery(): Statement|string
+    protected function getQuery(): Statement
     {
         return StatementBuilder::delete();
     }
