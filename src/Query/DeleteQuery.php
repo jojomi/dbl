@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Query;
 
 use Jojomi\Dbl\Client;
-use Jojomi\Dbl\Statement\Statement;
+use Jojomi\Dbl\Statement\DeleteStatement;
 use Jojomi\Dbl\Statement\StatementBuilder;
 
 /**
@@ -26,7 +26,7 @@ abstract class DeleteQuery extends BaseQuery
         }
     }
 
-    protected function getQuery(): Statement
+    protected function getQuery(): DeleteStatement
     {
         return StatementBuilder::delete();
     }
