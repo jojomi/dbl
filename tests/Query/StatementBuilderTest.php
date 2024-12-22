@@ -332,8 +332,6 @@ class StatementBuilderTest extends TestCase
             'SELECT `articles`.`id` FROM `articles` GROUP BY `articles`.`name`, `articles`.`id`;',
         ];
 
-
-
         yield [
             StatementBuilder::delete()
                 ->fromLocked('articles')
@@ -375,12 +373,11 @@ class StatementBuilderTest extends TestCase
             StatementBuilder::delete()
                 ->from('articles')
                 ->where(OrCondition::create(
-                    In::create('hour', [3, NamedParam::create('last_hour')])
+                    In::create('hour', [3, NamedParam::create('last_hour')]),
                 ))
             ,
             'DELETE FROM `articles` WHERE `hour` IN (3, :last_hour);',
         ];
-
 
         /*yield [
             StatementBuilder::insert()
@@ -404,5 +401,4 @@ class StatementBuilderTest extends TestCase
             'INSERT INTO `articles` (`number`) VALUES (:number_1)',
         ];*/
     }
-
 }

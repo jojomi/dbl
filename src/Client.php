@@ -59,12 +59,14 @@ final class Client
     {
         if ($this->transactionLevel > 0) {
             $this->transactionLevel++;
+
             return true;
         }
         $good = $this->getConnection()->beginTransaction();
         if ($good === true) {
             $this->transactionLevel++;
         }
+
         return $good;
     }
 
@@ -72,6 +74,7 @@ final class Client
     {
         if ($this->transactionLevel > 1) {
             $this->transactionLevel--;
+
             return true;
         }
 
@@ -83,6 +86,7 @@ final class Client
         if ($good === true) {
             $this->transactionLevel--;
         }
+
         return $good;
     }
 
@@ -101,6 +105,7 @@ final class Client
         if ($good === true) {
             $this->transactionLevel--;
         }
+
         return $good;
     }
 

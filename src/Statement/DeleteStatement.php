@@ -95,6 +95,7 @@ final class DeleteStatement implements Statement
     public function all(): self
     {
         $this->all = true;
+
         return $this;
     }
 
@@ -148,7 +149,10 @@ final class DeleteStatement implements Statement
         // safeguard
         if (!$this->all && ($this->condition === null && $this->limit === null)) {
             throw new InvalidArgumentException(
-                sprintf("SafeGuard: This query might delete all rows in %s. Either call all(), specify conditions using where(), or call limit()", implode(", ", array_map(static fn (Table $table) => $table->getDefinition(), $this->from))),
+                sprintf(
+                    "SafeGuard: This query might delete all rows in %s. Either call all(), specify conditions using where(), or call limit()",
+                    implode(", ", array_map(static fn (Table $table) => $table->getDefinition(), $this->from)),
+                ),
             );
         }
 
