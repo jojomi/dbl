@@ -337,6 +337,7 @@ class StatementBuilderTest extends TestCase
         yield [
             StatementBuilder::delete()
                 ->fromLocked('articles')
+                ->all()
             ,
             'DELETE FROM `articles`;',
         ];
@@ -368,6 +369,16 @@ class StatementBuilderTest extends TestCase
                 ->limit(3)
             ,
             'DELETE FROM `articles` ORDER BY `id` DESC LIMIT 3;',
+        ];
+
+        yield [
+            StatementBuilder::delete()
+                ->from('articles')
+                ->where(OrCondition::create(
+                    In::create('hour', [3, NamedParam::create('last_hour')])
+                ))
+            ,
+            'DELETE FROM `articles` WHERE `hour` IN (3, :last_hour);',
         ];
     }
 
