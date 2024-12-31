@@ -30,9 +30,14 @@ final readonly class NamedParam
         return $this->name;
     }
 
-    public function __toString(): string
+    public function getFullName(): string
     {
         return ':' . $this->name;
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName();
     }
 
 }
