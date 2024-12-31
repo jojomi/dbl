@@ -412,14 +412,17 @@ class StatementBuilderTest extends TestCase
             'INSERT INTO `articles` (`number`) VALUES (:number), (14);',
         ];
 
+        // test the key order in the rows and extra keys
         yield [
             StatementBuilder::insert()
                 ->into('articles')
+                // @phpcs:ignore SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys.IncorrectKeyOrder
                 ->addRow([
                     'title' => 'Whatever you like',
                     'date' => '2024-12-31',
                     'extra_param' => 1,
                 ])
+                // @phpcs:ignore SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys.IncorrectKeyOrder
                 ->addRow([
                     'secret' => NamedParam::create('param'),
                     'date' => '2025-01-01',
