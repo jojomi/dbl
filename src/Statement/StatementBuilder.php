@@ -23,4 +23,9 @@ final class StatementBuilder
     {
         return DeleteStatement::create();
     }
+
+    public static function insert(): InsertStatement
+    {
+        return InsertStatement::create();
+    }
 }

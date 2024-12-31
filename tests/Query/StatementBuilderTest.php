@@ -379,26 +379,54 @@ class StatementBuilderTest extends TestCase
             'DELETE FROM `articles` WHERE `hour` IN (3, :last_hour);',
         ];
 
-        /*yield [
+        yield [
             StatementBuilder::insert()
                 ->into('articles')
-                ->addRowWithFields([
+                ->addRow([
                     'title' => 'John Doe - My Memories',
                 ])
             ,
-            'INSERT INTO `articles` (`title`) VALUES (\'John Doe - My Memories\')',
+            'INSERT INTO `articles` (`title`) VALUES (\'John Doe - My Memories\');',
         ];
 
         yield [
             StatementBuilder::insert()
                 ->into('articles')
-                ->fields('number')
                 ->addRow([
                     'number' => NamedParam::create('number'),
-                    'unused_field' => 34,
                 ])
             ,
-            'INSERT INTO `articles` (`number`) VALUES (:number_1)',
-        ];*/
+            'INSERT INTO `articles` (`number`) VALUES (:number);',
+        ];
+
+        yield [
+            StatementBuilder::insert()
+                ->into('articles')
+                ->addRow([
+                    'number' => NamedParam::create('number'),
+                ])
+                ->addRow([
+                    'number' => 14,
+                ])
+            ,
+            'INSERT INTO `articles` (`number`) VALUES (:number), (14);',
+        ];
+
+        yield [
+            StatementBuilder::insert()
+                ->into('articles')
+                ->addRow([
+                    'title' => 'Whatever you like',
+                    'date' => '2024-12-31',
+                    'extra_param' => 1,
+                ])
+                ->addRow([
+                    'secret' => NamedParam::create('param'),
+                    'date' => '2025-01-01',
+                    'title' => 'Whatever is important',
+                ])
+            ,
+            "INSERT INTO `articles` (`title`, `date`) VALUES ('Whatever you like', '2024-12-31'), ('Whatever is important', '2025-01-01');",
+        ];
     }
 }
