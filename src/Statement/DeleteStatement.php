@@ -146,6 +146,10 @@ final class DeleteStatement implements Statement
 
     public function render(bool $omitSemicolon = false): string
     {
+        if (count($this->from) === 0) {
+            throw new InvalidStatementException('missing FROM on statement');
+        }
+
         // safeguard
         if (!$this->all && ($this->condition === null && $this->limit === null)) {
             throw new InvalidArgumentException(
