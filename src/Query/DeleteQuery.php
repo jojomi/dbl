@@ -6,7 +6,6 @@ namespace Jojomi\Dbl\Query;
 
 use Jojomi\Dbl\Client;
 use Jojomi\Dbl\Statement\DeleteStatement;
-use Jojomi\Dbl\Statement\StatementBuilder;
 
 /**
  * DeleteQuery.
@@ -16,6 +15,8 @@ use Jojomi\Dbl\Statement\StatementBuilder;
 abstract class DeleteQuery extends BaseQuery
 {
 
+    abstract protected function getQuery(): DeleteStatement;
+
     public function execute(Client $client): void
     {
         $conn = $client->getConnection();
@@ -24,10 +25,5 @@ abstract class DeleteQuery extends BaseQuery
         } finally {
             $client->closeConnection();
         }
-    }
-
-    protected function getQuery(): DeleteStatement
-    {
-        return StatementBuilder::delete();
     }
 }
