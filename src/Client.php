@@ -4,7 +4,11 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl;
 
+use Jojomi\Dbl\Query\BasicDeleteQuery;
+use Jojomi\Dbl\Query\BasicInsertQuery;
 use Jojomi\Dbl\Query\Query;
+use Jojomi\Dbl\Statement\DeleteStatement;
+use Jojomi\Dbl\Statement\InsertStatement;
 use PDO;
 use PDOException;
 use RuntimeException;
@@ -48,6 +52,18 @@ final class Client
         }
     }
 
+    public function executeStatement(DeleteStatement|InsertStatement $statement): void
+    {
+        try {
+            match (true) {
+                $statement instanceof DeleteStatement => $this->execute(BasicDeleteQuery::fromStatement($statement)),
+                $statement instanceof InsertStatement => $this->execute(BasicInsertQuery::fromStatement($statement)),
+            };
+        } catch (PDOException $e) {
+            throw new RuntimeException(sprintf("Query failed: %s\n%s", $e->getMessage(), $statement), previous: $e);
+        }
+    }
+
     public function resetTransactions(): void
     {
         while ($this->transactionLevel > 0) {
@@ -62,7 +78,8 @@ final class Client
 
             return true;
         }
-        $good = $this->getConnection()->beginTransaction();
+        $conn = $this->getConnection();
+        $good = $conn->beginTransaction();
         if ($good === true) {
             $this->transactionLevel++;
         }
@@ -72,6 +89,7 @@ final class Client
 
     public function commit(): bool
     {
+        var_dump($this->transactionLevel);
         if ($this->transactionLevel > 1) {
             $this->transactionLevel--;
 
@@ -79,9 +97,6 @@ final class Client
         }
 
         $conn = $this->getConnection();
-        if ($conn === null) {
-            return false;
-        }
         $good = $conn->commit();
         if ($good === true) {
             $this->transactionLevel--;
@@ -94,6 +109,9 @@ final class Client
     {
         if ($this->transactionLevel > 1) {
             $this->transactionLevel--;
+
+            // TODO we need to do more here: prevent more queries executed if already rollbacked?
+
             return true;
         }
 
