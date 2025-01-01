@@ -78,8 +78,7 @@ final class Client
 
             return true;
         }
-        $conn = $this->getConnection();
-        $good = $conn->beginTransaction();
+        $good = $this->getConnection()->beginTransaction();
         if ($good === true) {
             $this->transactionLevel++;
         }
@@ -89,7 +88,6 @@ final class Client
 
     public function commit(): bool
     {
-        var_dump($this->transactionLevel);
         if ($this->transactionLevel > 1) {
             $this->transactionLevel--;
 
@@ -97,6 +95,9 @@ final class Client
         }
 
         $conn = $this->getConnection();
+        if ($conn === null) {
+            return false;
+        }
         $good = $conn->commit();
         if ($good === true) {
             $this->transactionLevel--;
@@ -109,9 +110,6 @@ final class Client
     {
         if ($this->transactionLevel > 1) {
             $this->transactionLevel--;
-
-            // TODO we need to do more here: prevent more queries executed if already rollbacked?
-
             return true;
         }
 
