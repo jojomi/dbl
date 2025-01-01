@@ -32,13 +32,27 @@ readonly class Value
     public function render(): string
     {
         if (is_string($this->value)) {
-            return "'" . $this->value . "'";
+            return $this->renderString($this->value);
         }
         if (is_int($this->value)) {
             return (string)$this->value;
         }
 
         return $this->value->getFullName();
+    }
+
+    /**
+     * Render a string, quoted.
+     */
+    private function renderString(string $value): string
+    {
+        $escaped = str_replace(
+            ["\\", "\0", "\n", "\r", "\t", "\Z", "'", "\""],
+            ["\\\\", "\\0", "\\n", "\\r", "\\t", "\\Z", "''", "\\\""],
+            $value,
+        );
+
+        return "'{$escaped}'";
     }
 
 }

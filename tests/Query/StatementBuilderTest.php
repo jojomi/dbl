@@ -431,5 +431,16 @@ class StatementBuilderTest extends TestCase
             ,
             "INSERT INTO `articles` (`title`, `date`) VALUES ('Whatever you like', '2024-12-31'), ('Whatever is important', '2025-01-01');",
         ];
+
+        // test quoting
+        yield [
+            StatementBuilder::insert()
+                ->into('articles')
+                ->addRow([
+                    'title' => "It's about time",
+                ])
+            ,
+            "INSERT INTO `articles` (`title`) VALUES ('It''s about time');",
+        ];
     }
 }
