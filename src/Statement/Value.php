@@ -6,6 +6,7 @@ namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
 use Jojomi\Typer\Str;
+use Stringable;
 use function is_string;
 use function sprintf;
 
@@ -15,14 +16,14 @@ use function sprintf;
 readonly class Value
 {
 
-    private function __construct(private string|int|NamedParam $value)
+    private function __construct(private string|int|NamedParam|Stringable $value)
     {
         // NOOP
     }
 
     public static function create(mixed $value): self
     {
-        if (!is_string($value) && !is_int($value) && !$value instanceof NamedParam) {
+        if (!is_string($value) && !is_int($value) && !$value instanceof Stringable) {
             throw new InvalidArgumentException(sprintf('invalid value %s', Str::fromMixed($value)));
         }
 
@@ -37,8 +38,11 @@ readonly class Value
         if (is_int($this->value)) {
             return (string)$this->value;
         }
+        if ($this->value instanceof NamedParam) {
+            return $this->value->getFullName();
+        }
 
-        return $this->value->getFullName();
+        return (string)$this->value;
     }
 
     /**
