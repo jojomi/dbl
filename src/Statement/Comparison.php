@@ -32,17 +32,7 @@ final readonly class Comparison implements Condition
 
     public function render(): string
     {
-        $l = $this->left->getAccessor();
-
-        $right = $this->right;
-        $r = match (true) {
-            is_string($right) => "'{$right}'",
-            is_int($right) || $right instanceof NamedParam => (string)$right,
-            $right instanceof Field => $right->getAccessor(),
-            $right === null => '',
-        };
-
-        return trim(sprintf('%s %s %s', $l, $this->comparisonType->value, $r));
+        return trim(sprintf('%s %s %s', $this->left->getAccessor(), $this->comparisonType->value, Value::create($this->right)->render()));
     }
 
     public function requiresBrackets(): bool
