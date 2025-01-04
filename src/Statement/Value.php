@@ -16,14 +16,14 @@ use function sprintf;
 readonly class Value
 {
 
-    private function __construct(private string|int|NamedParam|Stringable $value)
+    private function __construct(private string|int|Field|NamedParam|Stringable $value)
     {
         // NOOP
     }
 
     public static function create(mixed $value): self
     {
-        if (!is_string($value) && !is_int($value) && !$value instanceof Stringable) {
+        if (!is_string($value) && !is_int($value) && !$value instanceof Stringable && !$value instanceof Field) {
             throw new InvalidArgumentException(sprintf('invalid value %s', Str::fromMixed($value)));
         }
 
@@ -32,17 +32,21 @@ readonly class Value
 
     public function render(): string
     {
-        if (is_string($this->value)) {
-            return $this->renderString($this->value);
+        $v = $this->value;
+        if (is_string($v)) {
+            return $this->renderString($v);
         }
-        if (is_int($this->value)) {
-            return (string)$this->value;
+        if (is_int($v)) {
+            return (string)$v;
         }
-        if ($this->value instanceof NamedParam) {
-            return $this->value->getFullName();
+        if ($v instanceof Field) {
+            return $v->getAccessor();
+        }
+        if ($v instanceof NamedParam) {
+            return $v->getFullName();
         }
 
-        return (string)$this->value;
+        return (string)$v;
     }
 
     /**
