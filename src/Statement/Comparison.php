@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use Stringable;
 use function sprintf;
 
 /**
@@ -11,12 +12,12 @@ use function sprintf;
  */
 final readonly class Comparison implements Condition
 {
-    private function __construct(private Field $left, private ComparisonType $comparisonType, private string|int|Field|NamedParam|null $right)
+    private function __construct(private Field $left, private ComparisonType $comparisonType, private string|int|Field|NamedParam|Stringable|null $right)
     {
         // NOOP
     }
 
-    public static function of(Field|string $left, ComparisonType $comparisonType, string|int|Field|NamedParam|null $right = null): self
+    public static function of(Field|string $left, ComparisonType $comparisonType, string|int|Field|NamedParam|Stringable|null $right = null): self
     {
         return new self(Field::create($left), $comparisonType, $right);
     }

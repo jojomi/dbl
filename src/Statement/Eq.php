@@ -4,17 +4,19 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use Stringable;
+
 /**
  * Equality check.
  */
 final readonly class Eq implements Condition
 {
-    private function __construct(private Field $left, private string|int|Field|NamedParam|null $right)
+    private function __construct(private Field $left, private string|int|Field|NamedParam|Stringable|null $right)
     {
         // NOOP
     }
 
-    public static function of(Field|string $left, string|int|Field|NamedParam|null $right = null): self
+    public static function of(Field|string $left, string|int|Field|NamedParam|Stringable|null $right = null): self
     {
         return new self(Field::create($left), $right);
     }
