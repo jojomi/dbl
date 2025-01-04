@@ -442,5 +442,16 @@ class StatementBuilderTest extends TestCase
             ,
             "INSERT INTO `articles` (`title`) VALUES ('It''s about time');",
         ];
+
+        yield [
+            StatementBuilder::insert()
+                ->into('articles')
+                ->ignore(true)
+                ->addRow([
+                    'title' => "It's about time",
+                ])
+            ,
+            "INSERT IGNORE INTO `articles` (`title`) VALUES ('It''s about time');",
+        ];
     }
 }

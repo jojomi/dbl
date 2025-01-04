@@ -17,6 +17,8 @@ final class InsertStatement implements Statement
 {
     private ?Table $into = null;
 
+    private bool $ignore = false;
+
     /** @var array<int, array<string, mixed>> */
     private array $rows = [];
 
@@ -37,6 +39,13 @@ final class InsertStatement implements Statement
         return $this;
     }
 
+    public function ignore(bool $value): self
+    {
+        $this->ignore = $value;
+
+        return $this;
+    }
+
     public function render(bool $omitSemicolon = false): string
     {
         // validate
@@ -49,7 +58,8 @@ final class InsertStatement implements Statement
         }
 
         $s = sprintf(
-            'INSERT INTO %s (%s) VALUES %s',
+            'INSERT%s INTO %s (%s) VALUES %s',
+            $this->ignore ? ' IGNORE' : '',
             $into->getDefinition(),
             implode(', ', array_map(static fn (Field $field) => $field->getAccessor(), $this->getFields())),
             implode(', ', array_map(fn (array $rowData) => $this->renderRow($rowData), $this->rows)),
