@@ -110,6 +110,7 @@ final class Client
     {
         if ($this->transactionLevel > 1) {
             $this->transactionLevel--;
+
             return true;
         }
 
