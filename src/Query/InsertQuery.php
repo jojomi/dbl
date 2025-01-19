@@ -35,6 +35,11 @@ abstract class InsertQuery extends BaseQuery
 
     public function execute(Client $client): void
     {
+        // no rows? -> NO-OP!
+        if (count($this->rows) === 0) {
+            return;
+        }
+
         $conn = $client->getConnection();
         try {
             $this->getPreparedStatement($conn)->execute();
