@@ -11,5 +11,7 @@ interface Statement
 {
     public function render(bool $omitSemicolon = false): string;
 
+    public function clone(): self;
+
     public function __toString(): string;
 }

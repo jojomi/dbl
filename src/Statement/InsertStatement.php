@@ -7,6 +7,7 @@ namespace Jojomi\Dbl\Statement;
 use function array_intersect;
 use function array_keys;
 use function array_map;
+use function DeepCopy\deep_copy;
 use function implode;
 use function sprintf;
 
@@ -105,6 +106,12 @@ final class InsertStatement implements Statement
         }
 
         return $result;
+    }
+
+    public function clone(): InsertStatement
+    {
+        /** @phpstan-ignore return.type */
+        return deep_copy($this);
     }
 
     /**

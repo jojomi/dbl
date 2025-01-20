@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use function array_map;
+use function DeepCopy\deep_copy;
 use function implode;
 use function is_string;
 
@@ -233,9 +234,14 @@ final class SelectStatement implements Statement
         return $s . ';';
     }
 
+    public function clone(): self
+    {
+        /** @phpstan-ignore return.type */
+        return deep_copy($this);
+    }
+
     public function __toString(): string
     {
         return $this->render();
     }
-
 }

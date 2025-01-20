@@ -6,6 +6,7 @@ namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
 use function array_map;
+use function DeepCopy\deep_copy;
 use function implode;
 use function is_string;
 use function sprintf;
@@ -180,6 +181,12 @@ final class DeleteStatement implements Statement
         }
 
         return $s . ';';
+    }
+
+    public function clone(): DeleteStatement
+    {
+        /** @phpstan-ignore return.type */
+        return deep_copy($this);
     }
 
     public function __toString(): string

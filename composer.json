@@ -13,6 +13,7 @@
     "php": ">=8.2",
     "ext-pdo": "*",
     "jojomi/typer": "^0.1",
+    "myclabs/deep-copy": "^1.12",
     "webmozart/assert": "^1.11"
   },
   "require-dev": {

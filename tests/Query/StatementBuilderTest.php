@@ -35,6 +35,12 @@ class StatementBuilderTest extends TestCase
         self::assertEquals($expected, $statement->render());
     }
 
+    #[DataProvider('provideRender')]
+    public function testClone(Statement $statement, string $expected): void
+    {
+        self::assertEquals($expected, $statement->clone()->render());
+    }
+
     /**
      * @return iterable<int, array{0: \Jojomi\Dbl\Statement\Statement, 1: string}>
      */
