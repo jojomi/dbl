@@ -183,7 +183,7 @@ final class DeleteStatement implements Statement
         return $s . ';';
     }
 
-    public function clone(): DeleteStatement
+    public function clone(): self
     {
         /** @phpstan-ignore return.type */
         return deep_copy($this);

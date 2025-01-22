@@ -118,7 +118,7 @@ final class InsertStatement implements Statement
         return $this->rowCount() === 0;
     }
 
-    public function clone(): InsertStatement
+    public function clone(): self
     {
         /** @phpstan-ignore return.type */
         return deep_copy($this);
