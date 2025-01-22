@@ -108,6 +108,16 @@ final class InsertStatement implements Statement
         return $result;
     }
 
+    public function rowCount(): int
+    {
+        return count($this->rows);
+    }
+
+    public function isNoOp(): bool
+    {
+        return $this->rowCount() === 0;
+    }
+
     public function clone(): InsertStatement
     {
         /** @phpstan-ignore return.type */

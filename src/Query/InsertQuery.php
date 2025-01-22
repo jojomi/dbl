@@ -36,7 +36,7 @@ abstract class InsertQuery extends BaseQuery
     public function execute(Client $client): void
     {
         // no rows? -> NO-OP!
-        if (count($this->rows) === 0) {
+        if ($this->isNoOp()) {
             return;
         }
 
@@ -46,6 +46,11 @@ abstract class InsertQuery extends BaseQuery
         } finally {
             $client->closeConnection();
         }
+    }
+
+    public function isNoOp(): bool
+    {
+        return count($this->rows) === 0;
     }
 
     protected function setTable(string $tableName): self
