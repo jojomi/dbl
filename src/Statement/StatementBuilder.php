@@ -28,4 +28,9 @@ final class StatementBuilder
     {
         return InsertStatement::create();
     }
+
+    public static function update(Table|string $table): UpdateStatement
+    {
+        return UpdateStatement::create($table);
+    }
 }

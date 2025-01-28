@@ -23,6 +23,7 @@ use Jojomi\Dbl\Statement\OrderType;
 use Jojomi\Dbl\Statement\Statement;
 use Jojomi\Dbl\Statement\StatementBuilder;
 use Jojomi\Dbl\Statement\Table;
+use Jojomi\Dbl\Statement\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -458,6 +459,36 @@ class StatementBuilderTest extends TestCase
                 ])
             ,
             "INSERT IGNORE INTO `articles` (`title`) VALUES ('It''s about time');",
+        ];
+
+        yield [
+            StatementBuilder::update('books')
+                ->value('author', 'John Doe')
+            ,
+            "UPDATE `books` SET `author` = 'John Doe';",
+        ];
+
+        yield [
+            StatementBuilder::update(Table::create('books'))
+                ->value('author', Value::create('John Doe'))
+                ->value(Field::create('pages'), 502)
+            ,
+            "UPDATE `books` SET `author` = 'John Doe', `pages` = 502;",
+        ];
+
+        yield [
+            StatementBuilder::update('books')
+                ->value('author', 'John Doe')
+                ->where(Eq::of('author', 'J.R.R. Tolkien'))
+            ,
+            "UPDATE `books` SET `author` = 'John Doe' WHERE `author` = 'J.R.R. Tolkien';",
+        ];
+
+        yield [
+            StatementBuilder::update('books')
+                ->value('author', NamedParam::create('author'))
+            ,
+            'UPDATE `books` SET `author` = :author;',
         ];
     }
 }
