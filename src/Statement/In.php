@@ -4,28 +4,22 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-use function is_string;
+use Stringable;
+use function array_map;
+use function implode;
 use function sprintf;
 
 /**
  * IN condition.
  */
-final readonly class In implements Condition
+readonly class In implements Condition
 {
     /**
-     * @param array<string|int|\Jojomi\Dbl\Statement\NamedParam> $values
+     * @param array<\Jojomi\Dbl\Statement\Value> $values
      */
     private function __construct(private Field $left, private array $values)
     {
         // NOOP
-    }
-
-    /**
-     * @param array<string|int|\Jojomi\Dbl\Statement\NamedParam> $values
-     */
-    public static function create(Field|string $left, array $values): self
-    {
-        return new self(Field::create($left), $values);
     }
 
     public function withTable(Table $table): static
@@ -42,20 +36,32 @@ final readonly class In implements Condition
 
     public function render(): string
     {
-        $l = $this->left->getAccessor();
-
         $values = array_map(
-            static fn (string|int|NamedParam $right) => match (true) {
-            is_string($right) => "'{$right}'",
-            default => (string)$right,
-            }, $this->values,
+            static fn (Value $right) => $right->render(), $this->values,
         );
 
-        return sprintf('%s IN (%s)', $l, implode(', ', $values));
+        return sprintf($this->getTemplate(), $this->left->getAccessor(), implode(', ', $values));
     }
 
     public function requiresBrackets(): bool
     {
         return false;
+    }
+
+    /**
+     * @param array<string|int|bool|\Jojomi\Dbl\Statement\Field|\Jojomi\Dbl\Statement\NamedParam|\Stringable|\Jojomi\Dbl\Statement\Value> $values
+     */
+    public static function create(Field|string $left, array $values): static
+    {
+        /** @phpstan-ignore-next-line */
+        return new static(
+            Field::create($left),
+            array_map(static fn (string|int|bool|Field|NamedParam|Stringable|Value $v) => Value::create($v), $values),
+        );
+    }
+
+    protected function getTemplate(): string
+    {
+        return '%s IN (%s)';
     }
 }
