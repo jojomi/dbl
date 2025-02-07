@@ -31,6 +31,6 @@ final class StatementBuilder
 
     public static function update(Table|string $table): UpdateStatement
     {
-        return UpdateStatement::create($table);
+        return UpdateStatement::create()->setTable($table);
     }
 }

@@ -463,22 +463,22 @@ class StatementBuilderTest extends TestCase
 
         yield [
             StatementBuilder::update('books')
-                ->value('author', 'John Doe')
+                ->setValue('author', 'John Doe')
             ,
             "UPDATE `books` SET `author` = 'John Doe';",
         ];
 
         yield [
             StatementBuilder::update(Table::create('books'))
-                ->value('author', Value::create('John Doe'))
-                ->value(Field::create('pages'), 502)
+                ->setValue('author', Value::create('John Doe'))
+                ->setValue(Field::create('pages'), 502)
             ,
             "UPDATE `books` SET `author` = 'John Doe', `pages` = 502;",
         ];
 
         yield [
             StatementBuilder::update('books')
-                ->value('author', 'John Doe')
+                ->setValue('author', 'John Doe')
                 ->where(Eq::of('author', 'J.R.R. Tolkien'))
             ,
             "UPDATE `books` SET `author` = 'John Doe' WHERE `author` = 'J.R.R. Tolkien';",
@@ -486,7 +486,7 @@ class StatementBuilderTest extends TestCase
 
         yield [
             StatementBuilder::update('books')
-                ->value('author', NamedParam::create('author'))
+                ->setValue('author', NamedParam::create('author'))
             ,
             'UPDATE `books` SET `author` = :author;',
         ];

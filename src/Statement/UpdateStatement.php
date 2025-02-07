@@ -19,17 +19,26 @@ final class UpdateStatement implements Statement
 
     private ?Condition $where = null;
 
-    private function __construct(private readonly Table $table)
+    private ?Table $table = null;
+
+    private function __construct()
     {
         // NOOP
     }
 
-    public static function create(Table|string $table): self
+    public static function create(): self
     {
-        return new self(Table::create($table));
+        return new self();
     }
 
-    public function value(Field|string $field, Value|string|int|bool|Stringable $value): self
+    public function setTable(Table|string $table): self
+    {
+        $this->table = Table::create($table);
+
+        return $this;
+    }
+
+    public function setValue(Field|string $field, Value|NamedParam|string|int|bool|Stringable $value): self
     {
         $this->fieldValues[Field::create($field)->getAccessor()] = Value::create($value);
 
@@ -46,6 +55,9 @@ final class UpdateStatement implements Statement
     public function render(bool $omitSemicolon = false): string
     {
         // validate
+        if ($this->table === null) {
+            throw new InvalidStatementException(sprintf('missing setTable() call on %s', $this::class));
+        }
         if (count($this->fieldValues) < 1) {
             throw new InvalidStatementException(sprintf('missing setField() call on %s', $this::class));
         }
