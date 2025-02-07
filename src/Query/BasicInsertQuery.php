@@ -27,4 +27,8 @@ class BasicInsertQuery extends InsertQuery
         return $this->statement->render();
     }
 
+    public function isNoOp(): bool
+    {
+        return false;
+    }
 }
