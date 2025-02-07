@@ -22,13 +22,13 @@ class BasicInsertQuery extends InsertQuery
         return new self($statement);
     }
 
-    protected function getQuery(): string
-    {
-        return $this->statement->render();
-    }
-
     public function isNoOp(): bool
     {
         return false;
+    }
+
+    protected function getQuery(): string
+    {
+        return $this->statement->render();
     }
 }
