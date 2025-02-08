@@ -31,21 +31,21 @@ abstract class UpdateQuery extends BaseQuery
         }
     }
 
-    public function setValue(Field|string $field, Value|NamedParam|string|int|bool|Stringable $value): self
+    public function setValue(Field|string $field, Value|NamedParam|string|int|bool|Stringable $value): static
     {
         $this->statement->setValue($field, Value::create($value));
 
         return $this;
     }
 
-    protected function setTable(string $tableName): self
+    protected function setTable(string $tableName): static
     {
         $this->statement->setTable($tableName);
 
         return $this;
     }
 
-    protected function where(Condition $condition): self
+    protected function where(Condition $condition): static
     {
         $this->statement->where($condition);
 
