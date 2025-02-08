@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Query;
 
 use Jojomi\Dbl\Client;
+use Jojomi\Dbl\Statement\Condition;
 use Jojomi\Dbl\Statement\Field;
 use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\UpdateStatement;
@@ -40,6 +41,13 @@ abstract class UpdateQuery extends BaseQuery
     protected function setTable(string $tableName): self
     {
         $this->statement->setTable($tableName);
+
+        return $this;
+    }
+
+    protected function where(Condition $condition): self
+    {
+        $this->statement->where($condition);
 
         return $this;
     }
