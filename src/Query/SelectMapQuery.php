@@ -10,6 +10,7 @@ use PDO;
 use PDOException;
 use RuntimeException;
 use Webmozart\Assert\Assert;
+use function json_encode;
 use function sprintf;
 
 /**
@@ -33,6 +34,7 @@ abstract class SelectMapQuery extends SelectQuery
     public function execute(Client $client): array
     {
         $conn = $client->getConnection();
+        /** @var array<array-key, T> $result */
         $result = [];
         try {
             $stmt = $this->getPreparedStatement($conn);
@@ -46,21 +48,15 @@ abstract class SelectMapQuery extends SelectQuery
 
             foreach ($rows as $row) {
                 $row = Arry::asStringMap($row);
-                $element = $this->parseRow($row, $client);
-                $key = $this->getKey($row);
-                if ($key === null) {
-                    $result[] = $element;
-                } else {
-                    $result[$key] = $element;
-                }
+                $this->addRowToResult($result, $row, $client);
             }
         } catch (PDOException $x) {
             throw new RuntimeException(sprintf(
-                    '%s: %s (query: %s, params: %s)',
-                    static::class,
-                    $x->getMessage(),
-                    $this->getQuery(),
-                    json_encode($this->params) ?: '?',
+                '%s: %s (query: %s, params: %s)',
+                static::class,
+                $x->getMessage(),
+                $this->getQuery(),
+                json_encode($this->params) ?: '?',
             ), previous: $x);
         } finally {
             $client->closeConnection();
@@ -69,4 +65,18 @@ abstract class SelectMapQuery extends SelectQuery
         return $result;
     }
 
+    /**
+     * @param array<array-key, T> $result
+     * @param array<string, mixed> $row
+     */
+    protected function addRowToResult(array &$result, array $row, Client $client): void
+    {
+        $element = $this->parseRow($row, $client);
+        $key = $this->getKey($row);
+        if ($key === null) {
+            $result[] = $element;
+        } else {
+            $result[$key] = $element;
+        }
+    }
 }
