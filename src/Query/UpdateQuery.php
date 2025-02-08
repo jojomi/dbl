@@ -18,7 +18,7 @@ use Stringable;
  */
 abstract class UpdateQuery extends BaseQuery
 {
-    protected UpdateStatement $updateStatement;
+    protected UpdateStatement $statement;
 
     public function execute(Client $client): void
     {
@@ -32,14 +32,14 @@ abstract class UpdateQuery extends BaseQuery
 
     public function setValue(Field|string $field, Value|NamedParam|string|int|bool|Stringable $value): self
     {
-        $this->updateStatement->setValue($field, Value::create($value));
+        $this->statement->setValue($field, Value::create($value));
 
         return $this;
     }
 
     protected function setTable(string $tableName): self
     {
-        $this->updateStatement->setTable($tableName);
+        $this->statement->setTable($tableName);
 
         return $this;
     }
