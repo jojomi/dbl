@@ -130,9 +130,11 @@ final class SelectStatement implements Statement
         return $this;
     }
 
-    public function orderBy(Order ...$order): self
+    public function orderBy(Order|Field|string ...$order): self
     {
         foreach ($order as $o) {
+            $o = Order::create($o);
+
             $currentTable = $this->currentTable;
             if ($currentTable !== null && $o->getTable() === null) {
                 $o = $o->withTable($currentTable);

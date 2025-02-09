@@ -15,8 +15,15 @@ final readonly class Order
         // NOOP
     }
 
-    public static function create(string|Field $field, OrderType $type): self
+    /**
+     * $type is ignored if $field is of type Order already.
+     */
+    public static function create(string|Field|Order $field, OrderType $type = OrderType::ascending): self
     {
+        if ($field instanceof Order) {
+            return $field;
+        }
+
         if (is_string($field)) {
             $field = Field::create($field);
         }
