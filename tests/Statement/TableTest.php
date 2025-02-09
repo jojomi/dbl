@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Jojomi\Dbl\Tests\Query;
+namespace Jojomi\Dbl\Tests\Statement;
 
 use Jojomi\Dbl\Statement\Table;
 use PHPUnit\Framework\TestCase;
