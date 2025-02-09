@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use BackedEnum;
 use InvalidArgumentException;
 use Jojomi\Typer\Str;
 use Stringable;
@@ -17,7 +18,7 @@ use function sprintf;
 readonly class Value
 {
 
-    private function __construct(private string|int|bool|Field|NamedParam|Stringable $value)
+    private function __construct(private string|int|bool|Field|NamedParam|Stringable|BackedEnum $value)
     {
         // NOOP
     }
@@ -27,9 +28,8 @@ readonly class Value
         if ($value instanceof self) {
             return $value;
         }
-        if (!is_string($value) && !is_int($value) && !is_bool(
-            $value,
-        ) && !$value instanceof Stringable && !$value instanceof Field) {
+        if (!is_string($value) && !is_int($value) && !is_bool($value) &&
+        !$value instanceof Stringable && !$value instanceof Field && !$value instanceof BackedEnum) {
             throw new InvalidArgumentException(sprintf('invalid value %s', Str::fromMixed($value)));
         }
 
@@ -39,9 +39,11 @@ readonly class Value
     public function render(): string
     {
         $v = $this->value;
-        if (is_string($v)) {
-            return $this->renderString($v);
+
+        if ($v instanceof BackedEnum) {
+            $v = $v->value;
         }
+
         if (is_int($v)) {
             return (string)$v;
         }
@@ -55,7 +57,7 @@ readonly class Value
             return $v->getFullName();
         }
 
-        return (string)$v;
+        return $this->renderString((string)$v);
     }
 
     /**
