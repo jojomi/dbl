@@ -262,16 +262,16 @@ class StatementBuilderTest extends TestCase
             StatementBuilder::select()
                 ->from('articles')
                 ->fields('id')
-                ->orderBy(Order::create('id', OrderType::ascending)),
-            'SELECT `id` FROM `articles` ORDER BY `id` ASC;',
+                ->orderBy(Order::create('id', OrderType::descending)),
+            'SELECT `id` FROM `articles` ORDER BY `id` DESC;',
         ];
 
         yield [
             StatementBuilder::select()
-                ->from('articles')
+                ->fromLocked(Table::create('articles', 'a'))
                 ->fields('id')
                 ->orderBy('id'),
-            'SELECT `id` FROM `articles` ORDER BY `id` ASC;',
+            'SELECT `a`.`id` FROM `articles` `a` ORDER BY `a`.`id` ASC;',
         ];
 
         yield [
