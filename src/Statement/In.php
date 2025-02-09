@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use BackedEnum;
 use Stringable;
 use function array_map;
 use function implode;
@@ -49,14 +50,14 @@ readonly class In implements Condition
     }
 
     /**
-     * @param array<string|int|bool|\Jojomi\Dbl\Statement\Field|\Jojomi\Dbl\Statement\NamedParam|\Stringable|\Jojomi\Dbl\Statement\Value> $values
+     * @param array<string|int|bool|\Jojomi\Dbl\Statement\Field|\Jojomi\Dbl\Statement\NamedParam|\Stringable|\BackedEnum|\Jojomi\Dbl\Statement\Value> $values
      */
     public static function create(Field|string $left, array $values): static
     {
         /** @phpstan-ignore-next-line */
         return new static(
             Field::create($left),
-            array_map(static fn (string|int|bool|Field|NamedParam|Stringable|Value $v) => Value::create($v), $values),
+            array_map(static fn (string|int|bool|Field|NamedParam|Stringable|BackedEnum|Value $v) => Value::create($v), $values),
         );
     }
 
