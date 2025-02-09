@@ -18,9 +18,9 @@ final readonly class Order
     /**
      * $type is ignored if $field is of type Order already.
      */
-    public static function create(string|Field|Order $field, OrderType $type = OrderType::ascending): self
+    public static function create(string|Field|self $field, OrderType $type = OrderType::ascending): self
     {
-        if ($field instanceof Order) {
+        if ($field instanceof self) {
             return $field;
         }
 
