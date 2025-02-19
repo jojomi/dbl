@@ -57,7 +57,10 @@ readonly class In implements Condition
         /** @phpstan-ignore-next-line */
         return new static(
             Field::create($left),
-            array_map(static fn (string|int|bool|Field|NamedParam|Stringable|BackedEnum|Value $v) => Value::create($v), $values),
+            array_map(
+                static fn (string|int|bool|Field|NamedParam|Stringable|BackedEnum|Value $v) => Value::create($v),
+                $values,
+            ),
         );
     }
 
