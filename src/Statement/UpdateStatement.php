@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use Stringable;
+use function array_map;
 use function DeepCopy\deep_copy;
 use function implode;
 use function sprintf;
@@ -20,6 +21,13 @@ final class UpdateStatement implements Statement
     private ?Condition $where = null;
 
     private ?Table $table = null;
+
+    /**
+     * @var array<\Jojomi\Dbl\Statement\Order> $orderBys
+     */
+    private array $orderBys = [];
+
+    private ?int $limit = null;
 
     private function __construct()
     {
@@ -52,6 +60,22 @@ final class UpdateStatement implements Statement
         return $this;
     }
 
+    public function orderBy(Order|Field|string ...$order): self
+    {
+        foreach ($order as $o) {
+            $this->orderBys[] = Order::create($o);
+        }
+
+        return $this;
+    }
+
+    public function limit(?int $limit): self
+    {
+        $this->limit = $limit;
+
+        return $this;
+    }
+
     public function render(bool $omitSemicolon = false): string
     {
         // validate
@@ -75,6 +99,14 @@ final class UpdateStatement implements Statement
 
         if ($this->where !== null) {
             $s .= ' WHERE ' . $this->where->render();
+        }
+
+        if (count($this->orderBys) > 0) {
+            $s .= ' ORDER BY ' . implode(', ', array_map(static fn (Order $o) => $o->render(), $this->orderBys));
+        }
+
+        if ($this->limit !== null) {
+            $s .= ' LIMIT ' . $this->limit;
         }
 
         if ($omitSemicolon) {

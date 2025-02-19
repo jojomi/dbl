@@ -514,5 +514,14 @@ class StatementBuilderTest extends TestCase
             ,
             'UPDATE `books` SET `author` = :author;',
         ];
+
+        yield [
+            StatementBuilder::update('books')
+                ->setValue('author', NamedParam::create('author'))
+                ->orderBy(Order::create('id', OrderType::descending))
+                ->limit(19)
+            ,
+            'UPDATE `books` SET `author` = :author ORDER BY `id` DESC LIMIT 19;',
+        ];
     }
 }
