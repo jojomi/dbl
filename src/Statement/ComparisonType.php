@@ -15,6 +15,4 @@ enum ComparisonType: string
     case lessThanOrEqual = '<=';
     case greaterThan = '>';
     case greaterThanOrEqual = '>=';
-    case null = 'IS NULL';
-    case notNull = 'IS NOT NULL';
 }

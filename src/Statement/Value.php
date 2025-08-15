@@ -18,19 +18,15 @@ use function sprintf;
 readonly class Value
 {
 
-    private function __construct(private string|int|bool|Field|NamedParam|Stringable|BackedEnum $value)
+    private function __construct(private string|int|bool|Field|NamedParam|Stringable|BackedEnum|null $value)
     {
         // NOOP
     }
 
-    public static function create(mixed $value): self
+    public static function create(Value|string|int|bool|Field|NamedParam|Stringable|BackedEnum|null $value): self
     {
         if ($value instanceof self) {
             return $value;
-        }
-        if (!is_string($value) && !is_int($value) && !is_bool($value) &&
-        !$value instanceof Stringable && !$value instanceof Field && !$value instanceof BackedEnum) {
-            throw new InvalidArgumentException(sprintf('invalid value %s', Str::fromMixed($value)));
         }
 
         return new self($value);
@@ -39,6 +35,10 @@ readonly class Value
     public function render(): string
     {
         $v = $this->value;
+
+        if ($v === null) {
+            return 'NULL';
+        }
 
         if ($v instanceof BackedEnum) {
             $v = $v->value;

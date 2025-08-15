@@ -139,6 +139,22 @@ class StatementBuilderTest extends TestCase
             "SELECT `id` FROM `articles` WHERE `name` = 'Michael';",
         ];
 
+        yield [
+            StatementBuilder::select()
+                ->from('articles')
+                ->fields('id')
+                ->where(Comparison::of('name', ComparisonType::equal, null)),
+            "SELECT `id` FROM `articles` WHERE `name` IS NULL;",
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->from('articles')
+                ->fields('id')
+                ->where(Comparison::of('name', ComparisonType::unequal, null)),
+            "SELECT `id` FROM `articles` WHERE `name` IS NOT NULL;",
+        ];
+
         $field = Field::create('id', table: Table::create('articles'));
 
         yield [

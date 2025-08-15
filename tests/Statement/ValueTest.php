@@ -4,6 +4,9 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Tests\Statement;
 
+use BackedEnum;
+use Jojomi\Dbl\Statement\Field;
+use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -29,6 +32,9 @@ class TestStringable implements Stringable
 
 final class ValueTest extends TestCase
 {
+    /**
+     * @param Value|string|int|bool|Field|NamedParam|Stringable|BackedEnum|null $input
+     */
     #[DataProvider('valueProvider')]
     public function testRender(mixed $input, string $expected): void
     {
@@ -46,5 +52,6 @@ final class ValueTest extends TestCase
         yield 'string enum' => [TestStringEnum::HELLO, "'hello'"];
         yield 'escaped quote' => ["escaped'quote", "'escaped''quote'"];
         yield 'stringable' => [new TestStringable(), "'stringable'"];
+        yield 'null' => [null, 'NULL'];
     }
 }
