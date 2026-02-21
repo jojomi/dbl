@@ -14,7 +14,7 @@
     "ext-pdo": "*",
     "jojomi/typer": "^0.1",
     "myclabs/deep-copy": "^1.12",
-    "webmozart/assert": "^1.11"
+    "webmozart/assert": "^1.12"
   },
   "require-dev": {
     "phpstan/extension-installer": "^1.4",

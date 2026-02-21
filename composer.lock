@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6258b55241bc1beca2e813d139a8bfb",
+    "content-hash": "afbd14ab478b04a29edbb547e824cc11",
     "packages": [
         {
             "name": "jojomi/typer",
