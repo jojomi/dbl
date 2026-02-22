@@ -30,7 +30,7 @@ abstract class SelectMapQuery extends SelectQuery
         /** @var array<array-key, T> $result */
         $result = [];
         try {
-            $stmt = $this->getPreparedStatement($conn);
+            $stmt = $this->getPreparedStatement($conn, $client->getSqlStyle());
             $executionResult = $stmt->execute();
             if ($executionResult === false) {
                 throw new RuntimeException('Failed to get data');

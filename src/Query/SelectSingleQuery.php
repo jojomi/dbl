@@ -23,7 +23,7 @@ abstract class SelectSingleQuery extends SelectQuery
     {
         $conn = $client->getConnection();
         try {
-            $stmt = $this->getPreparedStatement($conn);
+            $stmt = $this->getPreparedStatement($conn, $client->getSqlStyle());
             $executionResult = $stmt->execute();
             if ($executionResult === false) {
                 throw new RuntimeException('Failed to get data');

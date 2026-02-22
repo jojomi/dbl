@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Query;
 
 use DateTimeInterface;
+use Jojomi\Dbl\SqlStyle;
 use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\Statement;
 use PDO;
@@ -34,11 +35,11 @@ abstract class BaseQuery implements Query
     /**
      * Returns a prepared statement ready to be executed. Optionally with parameter values already bound.
      */
-    public function getPreparedStatement(PDO $conn, bool $autoBind = true): PDOStatement
+    public function getPreparedStatement(PDO $conn, SqlStyle $sqlStyle, bool $autoBind = true): PDOStatement
     {
         $query = $this->getQuery();
         if ($query instanceof Statement) {
-            $query = $query->render();
+            $query = $query->render($sqlStyle);
         }
 
         $stmt = $conn->prepare($query);

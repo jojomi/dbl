@@ -31,7 +31,7 @@ abstract class SelectListQuery extends BaseQuery
         $conn = $client->getConnection();
         $result = [];
         try {
-            $stmt = $this->getPreparedStatement($conn);
+            $stmt = $this->getPreparedStatement($conn, $client->getSqlStyle());
             $executionResult = $stmt->execute();
             if ($executionResult === false) {
                 throw new RuntimeException('Failed to get data');

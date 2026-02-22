@@ -35,7 +35,7 @@ abstract class InsertQuery extends BaseQuery
 
         $conn = $client->getConnection();
         try {
-            $this->getPreparedStatement($conn)->execute();
+            $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
         } finally {
             $client->closeConnection();
         }
