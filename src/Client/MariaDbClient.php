@@ -4,7 +4,13 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Client;
 
-use PDO;use PDOException;use RuntimeException;use function getenv;use function sprintf;
+use Jojomi\Dbl\SqlStyle;
+use PDO;
+use PDOException;
+use RuntimeException;
+
+use function getenv;
+use function sprintf;
 
 /**
  * MariaDbClient.
@@ -50,5 +56,10 @@ final class MariaDbClient extends BasicSqlClient
         }
 
         return $this->connection;
+    }
+
+    public function getSqlStyle(): SqlStyle
+    {
+        return SqlStyle::MariaDb;
     }
 }

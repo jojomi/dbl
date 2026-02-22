@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Client;
 
-use PDO;use PDOException;use RuntimeException;use function getenv;use function sprintf;
+use Jojomi\Dbl\SqlStyle;use PDO;use PDOException;use RuntimeException;use function getenv;use function sprintf;
 
 final class PostgresClient extends BasicSqlClient
 {
@@ -52,5 +52,10 @@ final class PostgresClient extends BasicSqlClient
         }
 
         return $this->connection;
+    }
+
+    public function getSqlStyle(): SqlStyle
+    {
+        return SqlStyle::Postgres;
     }
 }

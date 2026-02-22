@@ -4,7 +4,16 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Client;
 
-use Jojomi\Dbl\Query\BasicDeleteQuery;use Jojomi\Dbl\Query\BasicInsertQuery;use Jojomi\Dbl\Query\Query;use Jojomi\Dbl\Statement\DeleteStatement;use Jojomi\Dbl\Statement\InsertStatement;use PDO;use PDOException;use RuntimeException;use function sprintf;
+use Jojomi\Dbl\Query\BasicDeleteQuery;
+use Jojomi\Dbl\Query\BasicInsertQuery;
+use Jojomi\Dbl\Query\Query;
+use Jojomi\Dbl\SqlStyle;
+use Jojomi\Dbl\Statement\DeleteStatement;
+use Jojomi\Dbl\Statement\InsertStatement;
+use PDO;
+use PDOException;
+use RuntimeException;
+use function sprintf;
 
 /**
  * BasicSqlClient.
@@ -34,9 +43,10 @@ abstract class BasicSqlClient implements Client
     public function executeStatement(DeleteStatement|InsertStatement $statement): void
     {
         try {
+            $renderStyle = $this->getSqlStyle();
             match (true) {
-                $statement instanceof DeleteStatement => $this->execute(BasicDeleteQuery::fromStatement($statement)),
-                $statement instanceof InsertStatement => $this->execute(BasicInsertQuery::fromStatement($statement)),
+                $statement instanceof DeleteStatement => $this->execute(BasicDeleteQuery::fromStatement($statement->setRenderStyle($renderStyle))),
+                $statement instanceof InsertStatement => $this->execute(BasicInsertQuery::fromStatement($statement->setRenderStyle($renderStyle))),
             };
         } catch (PDOException $e) {
             throw new RuntimeException(sprintf("Query failed: %s\n%s", $e->getMessage(), $statement), previous: $e);
@@ -110,4 +120,5 @@ abstract class BasicSqlClient implements Client
         $this->connection = null;
     }
 
+    abstract public function getSqlStyle(): SqlStyle;
 }
