@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-/**
+use Jojomi\Dbl\SqlStyle;/**
  * GroupBy.
  */
 final readonly class GroupBy
@@ -24,9 +24,9 @@ final readonly class GroupBy
         return new self($field);
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
-        return $this->field->getAccessor();
+        return $this->field->getAccessor($sqlStyle);
     }
 
     public function getTable(): ?Table
@@ -43,7 +43,7 @@ final readonly class GroupBy
 
     public function __toString(): string
     {
-        return $this->render();
+        return $this->render(SqlStyle::MariaDb);
     }
 
 }

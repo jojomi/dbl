@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Tests\Statement;
 
 use BackedEnum;
-use Jojomi\Dbl\Statement\Field;
+use Jojomi\Dbl\SqlStyle;use Jojomi\Dbl\Statement\Field;
 use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -38,7 +38,7 @@ final class ValueTest extends TestCase
     #[DataProvider('valueProvider')]
     public function testRender(mixed $input, string $expected): void
     {
-        self::assertSame($expected, Value::create($input)->render());
+        self::assertSame($expected, Value::create($input)->render(SqlStyle::MariaDb));
     }
 
     /** @return iterable<string, array{mixed, string}> */

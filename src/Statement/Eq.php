@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-use Stringable;
+use Jojomi\Dbl\SqlStyle;use Stringable;
 
 /**
  * Equality check.
@@ -29,9 +29,9 @@ final readonly class Eq implements Condition
         );
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
-        return Comparison::of($this->left, ComparisonType::equal, $this->right)->render();
+        return Comparison::of($this->left, ComparisonType::equal, $this->right)->render($sqlStyle);
     }
 
     public function requiresBrackets(): bool

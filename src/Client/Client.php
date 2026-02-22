@@ -2,12 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Jojomi\Dbl;
+namespace Jojomi\Dbl\Client;
 
-use Jojomi\Dbl\Query\Query;
-use Jojomi\Dbl\Statement\DeleteStatement;
-use Jojomi\Dbl\Statement\InsertStatement;
-use PDO;
+use Jojomi\Dbl\Query\Query;use Jojomi\Dbl\Statement\DeleteStatement;use Jojomi\Dbl\Statement\InsertStatement;use PDO;
 
 /**
  * Client interface.

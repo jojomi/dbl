@@ -4,12 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client;
-use Jojomi\Typer\Arry;
-use PDO;
-use PDOException;
-use RuntimeException;
-use function sprintf;
+use Jojomi\Dbl\Client\Client;use Jojomi\Typer\Arry;use PDO;use PDOException;use RuntimeException;use function sprintf;
 
 /**
  * SelectListQuery.

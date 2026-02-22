@@ -2,13 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Jojomi\Dbl;
+namespace Jojomi\Dbl\Client;
 
-use PDO;
-use PDOException;
-use RuntimeException;
-use function getenv;
-use function sprintf;
+use PDO;use PDOException;use RuntimeException;use function getenv;use function sprintf;
 
 final class PostgresClient extends BasicSqlClient
 {

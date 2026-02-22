@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use Jojomi\Dbl\SqlStyle;
 use function sprintf;
 
 /**
@@ -26,33 +27,27 @@ final readonly class Table
         return new self($name, $alias, $raw);
     }
 
-    public function getDefinition(): string
+    public function getDefinition(SqlStyle $sqlStyle): string
     {
-        $name = $this->getName();
+        $name = $this->getName($sqlStyle);
         if ($this->alias === null) {
-            return sprintf('%s', $name);
+            return $name;
         }
 
-        return sprintf('%s %s', $name, $this->escape($this->alias));
+        return sprintf('%s %s', $name, Escaper::tableAlias($this->alias, $sqlStyle)); // AS is optional in Postgres
     }
 
-    public function getPrefix(): string
+    public function getPrefix(SqlStyle $sqlStyle): string
     {
-        return sprintf('%s', $this->alias !== null ? $this->escape($this->alias) : $this->getName());
+        return sprintf('%s', $this->alias !== null ? Escaper::tableAlias($this->alias, $sqlStyle) : $this->getName($sqlStyle));
     }
 
-    private function getName(): string
+    private function getName(SqlStyle $sqlStyle): string
     {
         if ($this->raw) {
             return $this->name;
         }
 
-        return $this->escape($this->name);
+        return Escaper::tableName($this->name, $sqlStyle);
     }
-
-    private function escape(string $input): string
-    {
-        return sprintf('`%s`', $input);
-    }
-
 }

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-use function array_map;
+use Jojomi\Dbl\SqlStyle;use function array_map;
 use function DeepCopy\deep_copy;
 use function implode;
 use function is_string;
@@ -12,7 +12,7 @@ use function is_string;
 /**
  * SelectStatement.
  */
-final class SelectStatement implements Statement
+final class SelectStatement extends BaseStatement
 {
     /**
      * @var array<\Jojomi\Dbl\Statement\Table> $from
@@ -201,26 +201,28 @@ final class SelectStatement implements Statement
         return $this;
     }
 
-    public function render(bool $omitSemicolon = false): string
+    public function render(?SqlStyle $sqlStyle = null, bool $omitSemicolon = false): string
     {
+        $sqlStyle ??= $this->getRenderStyle();
+
         $s = 'SELECT ';
         if ($this->distinct) {
             $s .= 'DISTINCT ';
         }
-        $s .= implode(', ', array_map(static fn (Field $f) => $f->getDefinition(), $this->fields));
+        $s .= implode(', ', array_map(static fn (Field $f) => $f->getDefinition($sqlStyle), $this->fields));
         $s .= ' FROM ';
-        $s .= implode(', ', array_map(static fn (Table $t) => $t->getDefinition(), $this->from));
+        $s .= implode(', ', array_map(static fn (Table $t) => $t->getDefinition($sqlStyle), $this->from));
         if (count($this->joins) > 0) {
-            $s .= ' ' . implode(' ', array_map(static fn (Join $j) => $j->render(), $this->joins));
+            $s .= ' ' . implode(' ', array_map(static fn (Join $j) => $j->render($sqlStyle), $this->joins));
         }
         if ($this->condition !== null) {
-            $s .= ' WHERE ' . $this->condition->render();
+            $s .= ' WHERE ' . $this->condition->render($sqlStyle);
         }
         if (count($this->orderBys) > 0) {
-            $s .= ' ORDER BY ' . implode(', ', array_map(static fn (Order $o) => $o->render(), $this->orderBys));
+            $s .= ' ORDER BY ' . implode(', ', array_map(static fn (Order $o) => $o->render($sqlStyle), $this->orderBys));
         }
         if (count($this->groupBys) > 0) {
-            $s .= ' GROUP BY ' . implode(', ', array_map(static fn (GroupBy $g) => $g->render(), $this->groupBys));
+            $s .= ' GROUP BY ' . implode(', ', array_map(static fn (GroupBy $g) => $g->render($sqlStyle), $this->groupBys));
         }
         if ($this->limit !== null) {
             $s .= ' LIMIT ' . $this->limit;

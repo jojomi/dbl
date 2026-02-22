@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-use function sprintf;
+use Jojomi\Dbl\SqlStyle;use function sprintf;
 
 /**
  * IS NOT NULL condition.
@@ -32,9 +32,9 @@ final readonly class IsNotNull implements Condition
         );
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
-        $l = $this->left->getAccessor();
+        $l = $this->left->getAccessor($sqlStyle);
 
         return sprintf('%s IS NOT NULL', $l);
     }

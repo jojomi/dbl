@@ -4,14 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use InvalidArgumentException;
-use Jojomi\Dbl\Client;
-use Stringable;
-use function array_flip;
-use function array_intersect_key;
-use function array_map;
-use function implode;
-use function sprintf;
+use InvalidArgumentException;use Jojomi\Dbl\Client\Client;use Stringable;use function array_flip;use function array_intersect_key;use function array_map;use function implode;use function sprintf;
 
 /**
  * InsertQuery.

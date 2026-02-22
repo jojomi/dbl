@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-/**
+use Cassandra\SSLOptions;use Jojomi\Dbl\SqlStyle;/**
  * FieldCompareParam.
  */
 final readonly class FieldComparisonParam implements Condition
@@ -24,13 +24,13 @@ final readonly class FieldComparisonParam implements Condition
         return self::create(field: $this->field, comparisonType: $this->comparisonType, param: $this->param);
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         return Comparison::of(
             Field::create($this->field),
             $this->comparisonType,
             NamedParam::create($this->param),
-        )->render();
+        )->render($sqlStyle);
     }
 
     public function requiresBrackets(): bool

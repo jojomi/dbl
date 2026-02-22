@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
-use Webmozart\Assert\Assert;
+use Jojomi\Dbl\SqlStyle;use Webmozart\Assert\Assert;
 use function is_string;
 use function sprintf;
 
@@ -37,7 +37,7 @@ final readonly class Join
         $targetTable = $fieldTarget->getTable();
         if ($targetTable === null) {
             throw new InvalidArgumentException(
-                'can not join with incomplete target field: ' . $fieldTarget->getAccessor(),
+                'can not join with incomplete target field: ' . $fieldTarget->getAccessor(SqlStyle::MariaDb),
             );
         }
 
@@ -70,7 +70,7 @@ final readonly class Join
         return $this->targetTable;
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         if ($this->source instanceof Field) {
             $targetTable = $this->targetTable;
@@ -79,23 +79,23 @@ final readonly class Join
             return sprintf(
                 '%s %s ON %s',
                 $this->type->value,
-                $targetTable->getDefinition(),
-                $this->condition->render(),
+                $targetTable->getDefinition($sqlStyle),
+                $this->condition->render($sqlStyle),
             );
         }
 
         return sprintf(
-            '%s (%s) `%s` ON %s',
+            '%s (%s) %s ON %s',
             $this->type->value,
-            $this->source->render(omitSemicolon: true),
-            $this->alias,
-            $this->condition->render(),
+            $this->source->render($sqlStyle, omitSemicolon: true),
+            Escaper::joinAlias($this->alias, $sqlStyle),
+            $this->condition->render($sqlStyle),
         );
     }
 
     public function __toString(): string
     {
-        return $this->render();
+        return $this->render(SqlStyle::MariaDb);
     }
 
 }

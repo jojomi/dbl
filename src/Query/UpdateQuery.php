@@ -4,13 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client;
-use Jojomi\Dbl\Statement\Condition;
-use Jojomi\Dbl\Statement\Field;
-use Jojomi\Dbl\Statement\NamedParam;
-use Jojomi\Dbl\Statement\UpdateStatement;
-use Jojomi\Dbl\Statement\Value;
-use Stringable;
+use Jojomi\Dbl\Client\Client;use Jojomi\Dbl\Statement\Condition;use Jojomi\Dbl\Statement\Field;use Jojomi\Dbl\Statement\NamedParam;use Jojomi\Dbl\Statement\UpdateStatement;use Jojomi\Dbl\Statement\Value;use Stringable;
 
 /**
  * UpdateQuery.

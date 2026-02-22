@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-use Stringable;
+use Jojomi\Dbl\SqlStyle;use Stringable;
 use function sprintf;
 
 /**
@@ -33,7 +33,7 @@ final readonly class Comparison implements Condition
         );
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         $comparison = $this->comparisonType->value;
         $right = Value::create($this->right);
@@ -48,9 +48,9 @@ final readonly class Comparison implements Condition
         return trim(
             sprintf(
                 '%s %s %s',
-                $this->left->getAccessor(),
+                $this->left->getAccessor($sqlStyle),
                 $comparison,
-                $right->render(),
+                $right->render($sqlStyle),
             ),
         );
     }

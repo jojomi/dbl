@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
-use function explode;
+use Jojomi\Dbl\SqlStyle;use function explode;
 use function is_string;
 use function sprintf;
 
@@ -37,22 +37,22 @@ readonly class Field
         return new self($name, alias: $alias, table: $table, raw: $raw);
     }
 
-    public function getDefinition(): string
+    public function getDefinition(SqlStyle $sqlStyle): string
     {
-        $name = $this->getName();
+        $name = $this->getName($sqlStyle);
 
         if ($this->table !== null && $this->raw === false) {
-            $name = $this->table->getPrefix() . '.' . $name;
+            $name = $this->table->getPrefix($sqlStyle) . '.' . $name;
         }
 
         if ($this->alias === null) {
             return sprintf('%s', $name);
         }
 
-        return sprintf("%s AS '%s'", $name, $this->alias);
+        return sprintf("%s AS %s", $name, Escaper::fieldAlias($this->alias, $sqlStyle));
     }
 
-    public function getAccessor(): string
+    public function getAccessor(SqlStyle $sqlStyle): string
     {
         if ($this->raw && $this->alias === null) {
             throw new InvalidArgumentException(sprintf('%s is accessed without alias', $this->name));
@@ -61,10 +61,10 @@ readonly class Field
         $tableString = '';
         $table = $this->table;
         if ($table !== null) {
-            $tableString = $table->getPrefix() . '.';
+            $tableString = $table->getPrefix($sqlStyle) . '.';
         }
 
-        return sprintf('%s%s', $tableString, $this->alias !== null ? $this->escape($this->alias) : $this->getName());
+        return sprintf('%s%s', $tableString, $this->alias !== null ? $this->escape($this->alias, $sqlStyle) : $this->getName($sqlStyle));
     }
 
     public function getRawName(): string
@@ -82,18 +82,22 @@ readonly class Field
         return new self(name: $this->name, alias: $this->alias, table: $this->table ?? $table, raw: $this->raw);
     }
 
-    private function getName(): string
+    private function getName(SqlStyle $sqlStyle): string
     {
         if ($this->raw) {
             return $this->name;
         }
 
-        return $this->escape($this->name);
+        return $this->escape($this->name, $sqlStyle);
     }
 
-    private function escape(string $input): string
+    private function escape(string $input, SqlStyle $sqlStyle): string
     {
-        return sprintf('`%s`', $input);
+        if ($sqlStyle === SqlStyle::MariaDb) {
+            return sprintf('`%s`', $input);
+        }
+
+        return sprintf('"%s"', $input);
     }
 
 }

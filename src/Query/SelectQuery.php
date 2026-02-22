@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client;
+use Jojomi\Dbl\Client\Client;
 
 /**
  * SelectQuery.

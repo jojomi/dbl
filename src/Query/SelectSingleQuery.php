@@ -4,13 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client;
-use Jojomi\Typer\Arry;
-use PDO;
-use PDOException;
-use RuntimeException;
-use function json_encode;
-use function sprintf;
+use Jojomi\Dbl\Client\Client;use Jojomi\Typer\Arry;use PDO;use PDOException;use RuntimeException;use function json_encode;use function sprintf;
 
 /**
  * SelectSingleQuery.
@@ -41,7 +35,7 @@ abstract class SelectSingleQuery extends SelectQuery
             }
 
             return $this->parseRow(Arry::asStringMap($rows[0]), $client);
-        } catch (PDOException $x) {
+        } catch (PDOException | RuntimeException $x) {
             throw new RuntimeException(sprintf(
                 '%s: %s (query: %s, params: %s)',
                 static::class,

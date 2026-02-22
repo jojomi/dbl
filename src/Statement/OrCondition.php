@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-use function array_map;
+use Jojomi\Dbl\SqlStyle;use function array_map;
 use function implode;
 
 /**
@@ -34,7 +34,7 @@ final readonly class OrCondition implements Condition
         );
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         if (count($this->subConditions) === 0) {
             return '1=1';
@@ -42,8 +42,8 @@ final readonly class OrCondition implements Condition
 
         return implode(
             ' OR ', array_map(
-                static function (Condition $c) {
-                    $content = $c->render();
+                static function (Condition $c) use ($sqlStyle) {
+                    $content = $c->render($sqlStyle);
                     if ($c->requiresBrackets()) {
                         $content = '(' . $content . ')';
                     }

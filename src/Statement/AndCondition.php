@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-/**
+use Jojomi\Dbl\SqlStyle;/**
  * AndCondition.
  */
 final readonly class AndCondition implements Condition
@@ -31,7 +31,7 @@ final readonly class AndCondition implements Condition
         );
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         if (count($this->subConditions) === 0) {
             return '1=1';
@@ -39,8 +39,8 @@ final readonly class AndCondition implements Condition
 
         return implode(
             ' AND ', array_map(
-                static function (Condition $c) {
-                    $content = $c->render();
+                static function (Condition $c) use ($sqlStyle) {
+                    $content = $c->render($sqlStyle);
                     if ($c->requiresBrackets()) {
                         $content = '(' . $content . ')';
                     }

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use BackedEnum;
-use Stringable;
+use Jojomi\Dbl\SqlStyle;use Stringable;
 use function array_map;
 use function implode;
 use function sprintf;
@@ -35,13 +35,13 @@ readonly class In implements Condition
         );
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         $values = array_map(
-            static fn (Value $right) => $right->render(), $this->values,
+            static fn (Value $right) => $right->render($sqlStyle), $this->values,
         );
 
-        return sprintf($this->getTemplate(), $this->left->getAccessor(), implode(', ', $values));
+        return sprintf($this->getTemplate(), $this->left->getAccessor($sqlStyle), implode(', ', $values));
     }
 
     public function requiresBrackets(): bool

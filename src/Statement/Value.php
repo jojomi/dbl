@@ -6,7 +6,7 @@ namespace Jojomi\Dbl\Statement;
 
 use BackedEnum;
 use InvalidArgumentException;
-use Jojomi\Typer\Str;
+use Jojomi\Dbl\SqlStyle;use Jojomi\Typer\Str;
 use Stringable;
 use function is_int;
 use function is_string;
@@ -32,7 +32,7 @@ readonly class Value
         return new self($value);
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
         $v = $this->value;
 
@@ -51,7 +51,7 @@ readonly class Value
             return (string)(int)$v;
         }
         if ($v instanceof Field) {
-            return $v->getAccessor();
+            return $v->getAccessor($sqlStyle);
         }
         if ($v instanceof NamedParam) {
             return $v->getFullName();

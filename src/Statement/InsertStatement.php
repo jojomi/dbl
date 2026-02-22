@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
+use Jojomi\Dbl\SqlStyle;
 use function array_intersect;
 use function array_keys;
 use function array_map;
@@ -14,7 +15,7 @@ use function sprintf;
 /**
  * InsertStatement.
  */
-final class InsertStatement implements Statement
+final class InsertStatement extends BaseStatement
 {
     private ?Table $into = null;
 
@@ -47,8 +48,10 @@ final class InsertStatement implements Statement
         return $this;
     }
 
-    public function render(bool $omitSemicolon = false): string
+    public function render(?SqlStyle $sqlStyle = null, bool $omitSemicolon = false): string
     {
+        $sqlStyle ??= $this->getRenderStyle();
+
         // validate
         $into = $this->into;
         if ($into === null) {
@@ -59,11 +62,18 @@ final class InsertStatement implements Statement
         }
 
         $s = sprintf(
-            'INSERT%s INTO %s (%s) VALUES %s',
-            $this->ignore ? ' IGNORE' : '',
-            $into->getDefinition(),
-            implode(', ', array_map(static fn (Field $field) => $field->getAccessor(), $this->getFields())),
-            implode(', ', array_map(fn (array $rowData) => $this->renderRow($rowData), $this->rows)),
+            'INSERT%s INTO %s (%s) VALUES %s%s',
+            $this->ignore ? match ($sqlStyle) {
+                SqlStyle::MariaDb => ' IGNORE',
+                SqlStyle::Postgres => '',
+            } : '',
+            $into->getDefinition($sqlStyle),
+            implode(', ', array_map(static fn (Field $field) => $field->getAccessor($sqlStyle), $this->getFields())),
+            implode(', ', array_map(fn (array $rowData) => $this->renderRow($rowData, $sqlStyle), $this->rows)),
+            $this->ignore ? match ($sqlStyle) {
+                SqlStyle::MariaDb => '',
+                SqlStyle::Postgres => ' ON CONFLICT DO NOTHING',
+            } : '',
         );
 
         if ($omitSemicolon) {
@@ -127,7 +137,7 @@ final class InsertStatement implements Statement
     /**
      * @param array<string, mixed> $rowData
      */
-    private function renderRow(array $rowData): string
+    private function renderRow(array $rowData, SqlStyle $sqlStyle): string
     {
         // order has to match the column name order!
         $values = [];
@@ -137,7 +147,7 @@ final class InsertStatement implements Statement
 
         return sprintf(
             '(%s)',
-            implode(', ', array_map(static fn (mixed $value) => Value::create($value)->render(), $values)),
+            implode(', ', array_map(static fn (mixed $value) => Value::create($value)->render($sqlStyle), $values)),
         );
     }
 

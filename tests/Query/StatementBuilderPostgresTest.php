@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Tests\Query;
 
-use Jojomi\Dbl\Statement\AndCondition;
+use Jojomi\Dbl\SqlStyle;use Jojomi\Dbl\Statement\AndCondition;
 use Jojomi\Dbl\Statement\Comparison;
 use Jojomi\Dbl\Statement\ComparisonType;
 use Jojomi\Dbl\Statement\Eq;
@@ -27,19 +27,19 @@ use Jojomi\Dbl\Statement\Value;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class StatementBuilderTest extends TestCase
+class StatementBuilderPostgresTest extends TestCase
 {
 
     #[DataProvider('provideRender')]
     public function testRender(Statement $statement, string $expected): void
     {
-        self::assertEquals($expected, $statement->render());
+        self::assertEquals($expected, $statement->render(SqlStyle::Postgres));
     }
 
     #[DataProvider('provideRender')]
     public function testClone(Statement $statement, string $expected): void
     {
-        self::assertEquals($expected, $statement->clone()->render());
+        self::assertEquals($expected, $statement->clone()->render(SqlStyle::Postgres));
     }
 
     /**
@@ -51,57 +51,57 @@ class StatementBuilderTest extends TestCase
             StatementBuilder::select()
                 ->from('articles')
                 ->fields('id'),
-            'SELECT `id` FROM `articles`;',
+            'SELECT "id" FROM "articles";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->fromLocked(Table::create('articles', 'a'))
                 ->fields('id'),
-            'SELECT `a`.`id` FROM `articles` `a`;',
+            'SELECT "a"."id" FROM "articles" "a";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->fromLocked(Table::create('articles', 'a'))
                 ->fields('id', 'name'),
-            'SELECT `a`.`id`, `a`.`name` FROM `articles` `a`;',
+            'SELECT "a"."id", "a"."name" FROM "articles" "a";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->fromLocked(Table::create('articles', 'a'))
-                ->fields(Field::create('MAX(`id`)', alias: 'x', raw: true)),
-            "SELECT MAX(`id`) AS 'x' FROM `articles` `a`;",
+                ->fields(Field::create('MAX("id")', alias: 'x', raw: true)),
+            'SELECT MAX("id") AS "x" FROM "articles" "a";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->fromLocked(Table::create('articles', 'a'))
                 ->fields(Field::create('name', table: 'blub')),
-            'SELECT `blub`.`name` FROM `articles` `a`;',
+            'SELECT "blub"."name" FROM "articles" "a";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->from(Table::create('articles'))
-                ->fields(Field::create('COUNT(`id`)', raw: true)),
-            'SELECT COUNT(`id`) FROM `articles`;',
+                ->fields(Field::create('COUNT("id")', raw: true)),
+            'SELECT COUNT("id") FROM "articles";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->distinct(false)
                 ->fromLocked(Table::create('articles'))
-                ->fields(Field::create('COUNT(`articles`.`id`)', raw: true)),
-            'SELECT COUNT(`articles`.`id`) FROM `articles`;',
+                ->fields(Field::create('COUNT("articles"."id")', raw: true)),
+            'SELECT COUNT("articles"."id") FROM "articles";',
         ];
 
         yield [
             StatementBuilder::select()
                 ->fromLocked(Table::create('articles'))
-                ->fields(Field::create('COUNT(`articles`.`id`)', raw: true)),
-            'SELECT COUNT(`articles`.`id`) FROM `articles`;',
+                ->fields(Field::create('COUNT("articles"."id")', raw: true)),
+            'SELECT COUNT("articles"."id") FROM "articles";',
         ];
 
         yield [
@@ -112,7 +112,7 @@ class StatementBuilderTest extends TestCase
                 ->resetCurrentTable()
                 ->from(Table::create('names'))
                 ->fields('id'),
-            'SELECT DISTINCT `a`.`id`, `a`.`name`, `id` FROM `articles` `a`, `names`;',
+            'SELECT DISTINCT "a"."id", "a"."name", "id" FROM "articles" "a", "names";',
         ];
 
         yield [
@@ -120,7 +120,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(Comparison::of('id', ComparisonType::equal, NamedParam::create('id'))),
-            'SELECT `id` FROM `articles` WHERE `id` = :id;',
+            'SELECT "id" FROM "articles" WHERE "id" = :id;',
         ];
 
         yield [
@@ -128,7 +128,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(Comparison::of('id', ComparisonType::equal, 15)),
-            'SELECT `id` FROM `articles` WHERE `id` = 15;',
+            'SELECT "id" FROM "articles" WHERE "id" = 15;',
         ];
 
         yield [
@@ -136,7 +136,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(Comparison::of('name', ComparisonType::equal, 'Michael')),
-            "SELECT `id` FROM `articles` WHERE `name` = 'Michael';",
+            "SELECT \"id\" FROM \"articles\" WHERE \"name\" = 'Michael';",
         ];
 
         yield [
@@ -144,7 +144,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(Comparison::of('name', ComparisonType::equal, null)),
-            "SELECT `id` FROM `articles` WHERE `name` IS NULL;",
+            'SELECT "id" FROM "articles" WHERE "name" IS NULL;',
         ];
 
         yield [
@@ -152,7 +152,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(Comparison::of('name', ComparisonType::unequal, null)),
-            "SELECT `id` FROM `articles` WHERE `name` IS NOT NULL;",
+            'SELECT "id" FROM "articles" WHERE "name" IS NOT NULL;',
         ];
 
         $field = Field::create('id', table: Table::create('articles'));
@@ -162,7 +162,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields($field)
                 ->where(Comparison::of($field, ComparisonType::equal, NamedParam::create('id'))),
-            'SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = :id;',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = :id;',
         ];
 
         $field = Field::create('id', table: Table::create('articles'));
@@ -172,7 +172,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields($field)
                 ->where(FieldComparisonParam::create($field, ComparisonType::equal, 'id')),
-            'SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = :id;',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = :id;',
         ];
 
         yield [
@@ -180,7 +180,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(In::create('id', [1, 2, 3])),
-            'SELECT `id` FROM `articles` WHERE `id` IN (1, 2, 3);',
+            'SELECT "id" FROM "articles" WHERE "id" IN (1, 2, 3);',
         ];
 
         yield [
@@ -188,7 +188,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(In::create('name', ['ab', 2])),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`name` IN ('ab', 2);",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."name" IN (\'ab\', 2);',
         ];
 
         yield [
@@ -196,7 +196,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(In::create('id', [25, NamedParam::create('appleId')])),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` IN (25, :appleId);",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" IN (25, :appleId);',
         ];
 
         yield [
@@ -204,7 +204,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(NotIn::create('name', ['ab', 2])),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`name` NOT IN ('ab', 2);",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."name" NOT IN (\'ab\', 2);',
         ];
 
         yield [
@@ -212,7 +212,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(Eq::of('id', 1)),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1;",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1;',
         ];
 
         yield [
@@ -221,7 +221,7 @@ class StatementBuilderTest extends TestCase
                 ->fields('id')
                 ->where(Eq::of('id', 1))
                 ->where(Eq::of('name', 'Adam')),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1 AND `articles`.`name` = 'Adam';",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND "articles"."name" = \'Adam\';',
         ];
 
         yield [
@@ -229,7 +229,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(AndCondition::create(Eq::of('id', 1), Eq::of('name', 'Adam'))),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1 AND `articles`.`name` = 'Adam';",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND "articles"."name" = \'Adam\';',
         ];
 
         yield [
@@ -237,7 +237,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(OrCondition::create(Eq::of('id', 1), Eq::of('name', 'Adam'))),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1 OR `articles`.`name` = 'Adam';",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 OR "articles"."name" = \'Adam\';',
         ];
 
         yield [
@@ -246,7 +246,7 @@ class StatementBuilderTest extends TestCase
                 ->fields('id')
                 ->where(Eq::of('id', 1))
                 ->where(OrCondition::create(Eq::of('id', 17), Eq::of('name', 'Adam'))),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` = 1 AND (`articles`.`id` = 17 OR `articles`.`name` = 'Adam');",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND ("articles"."id" = 17 OR "articles"."name" = \'Adam\');',
         ];
 
         yield [
@@ -255,7 +255,7 @@ class StatementBuilderTest extends TestCase
                 ->fields('id')
                 ->where(IsNotNull::of('id'))
                 ->where(IsNull::of('name')),
-            "SELECT `articles`.`id` FROM `articles` WHERE `articles`.`id` IS NOT NULL AND `articles`.`name` IS NULL;",
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" IS NOT NULL AND "articles"."name" IS NULL;',
         ];
 
         yield [
@@ -263,7 +263,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(AndCondition::create()),
-            "SELECT `articles`.`id` FROM `articles` WHERE 1=1;",
+            'SELECT "articles"."id" FROM "articles" WHERE 1=1;',
         ];
 
         yield [
@@ -271,7 +271,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(OrCondition::create()),
-            "SELECT `articles`.`id` FROM `articles` WHERE 1=1;",
+            'SELECT "articles"."id" FROM "articles" WHERE 1=1;',
         ];
 
         yield [
@@ -279,7 +279,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->orderBy(Order::create('id', OrderType::descending)),
-            'SELECT `id` FROM `articles` ORDER BY `id` DESC;',
+            'SELECT "id" FROM "articles" ORDER BY "id" DESC;',
         ];
 
         yield [
@@ -287,7 +287,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked(Table::create('articles', 'a'))
                 ->fields('id')
                 ->orderBy('id'),
-            'SELECT `a`.`id` FROM `articles` `a` ORDER BY `a`.`id` ASC;',
+            'SELECT "a"."id" FROM "articles" "a" ORDER BY "a"."id" ASC;',
         ];
 
         yield [
@@ -295,7 +295,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->orderBy(Field::create('id', table: 'articles')),
-            'SELECT `id` FROM `articles` ORDER BY `articles`.`id` ASC;',
+            'SELECT "id" FROM "articles" ORDER BY "articles"."id" ASC;',
         ];
 
         yield [
@@ -303,7 +303,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->orderBy(Order::create(Field::create('id'), OrderType::descending)),
-            'SELECT `id` FROM `articles` ORDER BY `id` DESC;',
+            'SELECT "id" FROM "articles" ORDER BY "id" DESC;',
         ];
 
         yield [
@@ -314,7 +314,7 @@ class StatementBuilderTest extends TestCase
                     Order::create('name', OrderType::descending),
                     Order::create(Field::create('age', table: 'books'), OrderType::ascending),
                 ),
-            'SELECT `id` FROM `articles` ORDER BY `name` DESC, `books`.`age` ASC;',
+            'SELECT "id" FROM "articles" ORDER BY "name" DESC, "books"."age" ASC;',
         ];
 
         yield [
@@ -322,7 +322,7 @@ class StatementBuilderTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->limit(10),
-            'SELECT `id` FROM `articles` LIMIT 10;',
+            'SELECT "id" FROM "articles" LIMIT 10;',
         ];
 
         yield [
@@ -331,16 +331,15 @@ class StatementBuilderTest extends TestCase
                 ->fields('id')
                 ->limit(1)
                 ->offset(20),
-            'SELECT `id` FROM `articles` LIMIT 1 OFFSET 20;',
+            'SELECT "id" FROM "articles" LIMIT 1 OFFSET 20;',
         ];
 
-        // Joins
         yield [
             StatementBuilder::select()
                 ->from('articles')
                 ->fields('id')
                 ->join(Join::byField(JoinType::inner, 'author_id', Field::create('id', table: 'authors'))),
-            'SELECT `id` FROM `articles` INNER JOIN `authors` ON `author_id` = `authors`.`id`;',
+            'SELECT "id" FROM "articles" INNER JOIN "authors" ON "author_id" = "authors"."id";',
         ];
 
         yield [
@@ -348,7 +347,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->join(Join::byField(JoinType::right, 'author_id', Field::create('id', table: 'authors'))),
-            'SELECT `articles`.`id` FROM `articles` RIGHT JOIN `authors` ON `articles`.`author_id` = `authors`.`id`;',
+            'SELECT "articles"."id" FROM "articles" RIGHT JOIN "authors" ON "articles"."author_id" = "authors"."id";',
         ];
 
         $subSelect = StatementBuilder::select()->from('authors')->fields(Field::create('id', alias: 'identifier'));
@@ -357,7 +356,6 @@ class StatementBuilderTest extends TestCase
             StatementBuilder::select()
                 ->fromLocked('articles')
                 ->fields('id')
-                #->setCurrentTable('adadad')
                 ->join(Join::bySubquery(
                     JoinType::inner,
                     sub: $subSelect,
@@ -368,7 +366,7 @@ class StatementBuilderTest extends TestCase
                         Field::create('identifier', table: 'sub'),
                     ),
                 )),
-            "SELECT `articles`.`id` FROM `articles` INNER JOIN (SELECT `id` AS 'identifier' FROM `authors`) `sub` ON `articles`.`author_id` = `sub`.`identifier`;",
+            'SELECT "articles"."id" FROM "articles" INNER JOIN (SELECT "id" AS "identifier" FROM "authors") "sub" ON "articles"."author_id" = "sub"."identifier";',
         ];
 
         yield [
@@ -376,7 +374,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->groupBy('name', 'id'),
-            'SELECT `articles`.`id` FROM `articles` GROUP BY `articles`.`name`, `articles`.`id`;',
+            'SELECT "articles"."id" FROM "articles" GROUP BY "articles"."name", "articles"."id";',
         ];
 
         yield [
@@ -384,7 +382,7 @@ class StatementBuilderTest extends TestCase
                 ->fromLocked('articles')
                 ->all()
             ,
-            'DELETE FROM `articles`;',
+            'DELETE FROM "articles";',
         ];
 
         yield [
@@ -394,7 +392,7 @@ class StatementBuilderTest extends TestCase
                     Comparison::of('id', ComparisonType::lessThanOrEqual, 142),
                 )
             ,
-            'DELETE FROM `articles` WHERE `id` <= 142;',
+            'DELETE FROM "articles" WHERE "id" <= 142;',
         ];
 
         yield [
@@ -404,7 +402,7 @@ class StatementBuilderTest extends TestCase
                     Comparison::of('id', ComparisonType::lessThan, 151),
                 )
             ,
-            'DELETE FROM `articles` WHERE `articles`.`id` < 151;',
+            'DELETE FROM "articles" WHERE "articles"."id" < 151;',
         ];
 
         yield [
@@ -413,7 +411,7 @@ class StatementBuilderTest extends TestCase
                 ->orderBy(Order::create('id', OrderType::descending))
                 ->limit(3)
             ,
-            'DELETE FROM `articles` ORDER BY `id` DESC LIMIT 3;',
+            'DELETE FROM "articles" WHERE "ctid" IN (SELECT "ctid" FROM "articles" ORDER BY "id" DESC LIMIT 3);',
         ];
 
         yield [
@@ -423,7 +421,7 @@ class StatementBuilderTest extends TestCase
                     In::create('hour', [3, NamedParam::create('last_hour')]),
                 ))
             ,
-            'DELETE FROM `articles` WHERE `hour` IN (3, :last_hour);',
+            'DELETE FROM "articles" WHERE "hour" IN (3, :last_hour);',
         ];
 
         yield [
@@ -433,7 +431,7 @@ class StatementBuilderTest extends TestCase
                     'title' => 'John Doe - My Memories',
                 ])
             ,
-            'INSERT INTO `articles` (`title`) VALUES (\'John Doe - My Memories\');',
+            'INSERT INTO "articles" ("title") VALUES (\'John Doe - My Memories\');',
         ];
 
         yield [
@@ -443,7 +441,7 @@ class StatementBuilderTest extends TestCase
                     'number' => NamedParam::create('number'),
                 ])
             ,
-            'INSERT INTO `articles` (`number`) VALUES (:number);',
+            'INSERT INTO "articles" ("number") VALUES (:number);',
         ];
 
         yield [
@@ -456,30 +454,26 @@ class StatementBuilderTest extends TestCase
                     'number' => 14,
                 ])
             ,
-            'INSERT INTO `articles` (`number`) VALUES (:number), (14);',
+            'INSERT INTO "articles" ("number") VALUES (:number), (14);',
         ];
 
-        // test the key order in the rows and extra keys
         yield [
             StatementBuilder::insert()
                 ->into('articles')
-                // @phpcs:ignore SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys.IncorrectKeyOrder
                 ->addRow([
                     'title' => 'Whatever you like',
                     'date' => '2024-12-31',
                     'extra_param' => 1,
                 ])
-                // @phpcs:ignore SlevomatCodingStandard.Arrays.AlphabeticallySortedByKeys.IncorrectKeyOrder
                 ->addRow([
                     'secret' => NamedParam::create('param'),
                     'date' => '2025-01-01',
                     'title' => 'Whatever is important',
                 ])
             ,
-            "INSERT INTO `articles` (`title`, `date`) VALUES ('Whatever you like', '2024-12-31'), ('Whatever is important', '2025-01-01');",
+            'INSERT INTO "articles" ("title", "date") VALUES (\'Whatever you like\', \'2024-12-31\'), (\'Whatever is important\', \'2025-01-01\');',
         ];
 
-        // test quoting
         yield [
             StatementBuilder::insert()
                 ->into('articles')
@@ -487,7 +481,7 @@ class StatementBuilderTest extends TestCase
                     'title' => "It's about time",
                 ])
             ,
-            "INSERT INTO `articles` (`title`) VALUES ('It''s about time');",
+            'INSERT INTO "articles" ("title") VALUES (\'It\'\'s about time\');',
         ];
 
         yield [
@@ -498,14 +492,14 @@ class StatementBuilderTest extends TestCase
                     'title' => "It's about time",
                 ])
             ,
-            "INSERT IGNORE INTO `articles` (`title`) VALUES ('It''s about time');",
+            'INSERT INTO "articles" ("title") VALUES (\'It\'\'s about time\') ON CONFLICT DO NOTHING;',
         ];
 
         yield [
             StatementBuilder::update('books')
                 ->setValue('author', 'John Doe')
             ,
-            "UPDATE `books` SET `author` = 'John Doe';",
+            'UPDATE "books" SET "author" = \'John Doe\';',
         ];
 
         yield [
@@ -513,7 +507,7 @@ class StatementBuilderTest extends TestCase
                 ->setValue('author', Value::create('John Doe'))
                 ->setValue(Field::create('pages'), 502)
             ,
-            "UPDATE `books` SET `author` = 'John Doe', `pages` = 502;",
+            'UPDATE "books" SET "author" = \'John Doe\', "pages" = 502;',
         ];
 
         yield [
@@ -521,14 +515,14 @@ class StatementBuilderTest extends TestCase
                 ->setValue('author', 'John Doe')
                 ->where(Eq::of('author', 'J.R.R. Tolkien'))
             ,
-            "UPDATE `books` SET `author` = 'John Doe' WHERE `author` = 'J.R.R. Tolkien';",
+            'UPDATE "books" SET "author" = \'John Doe\' WHERE "author" = \'J.R.R. Tolkien\';',
         ];
 
         yield [
             StatementBuilder::update('books')
                 ->setValue('author', NamedParam::create('author'))
             ,
-            'UPDATE `books` SET `author` = :author;',
+            'UPDATE "books" SET "author" = :author;',
         ];
 
         yield [
@@ -537,7 +531,7 @@ class StatementBuilderTest extends TestCase
                 ->orderBy(Order::create('id', OrderType::descending))
                 ->limit(19)
             ,
-            'UPDATE `books` SET `author` = :author ORDER BY `id` DESC LIMIT 19;',
+            'UPDATE "books" SET "author" = :author WHERE "ctid" IN (SELECT "ctid" FROM "books" ORDER BY "id" DESC LIMIT 19);',
         ];
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Statement;
 
-/**
+use Jojomi\Dbl\SqlStyle;/**
  * Order.
  */
 final readonly class Order
@@ -31,9 +31,9 @@ final readonly class Order
         return new self($field, type: $type);
     }
 
-    public function render(): string
+    public function render(SqlStyle $sqlStyle): string
     {
-        return $this->field->getAccessor() . ' ' . $this->type->value;
+        return $this->field->getAccessor($sqlStyle) . ' ' . $this->type->value;
     }
 
     public function withTable(Table $table): self
@@ -51,7 +51,7 @@ final readonly class Order
 
     public function __toString(): string
     {
-        return $this->render();
+        return $this->render(SqlStyle::MariaDb);
     }
 
 }

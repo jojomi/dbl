@@ -4,12 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client;
-use Jojomi\Dbl\Statement\Field;
-use Jojomi\Dbl\Statement\Statement;
-use Jojomi\Dbl\Statement\StatementBuilder;
-use Jojomi\Dbl\Statement\Table;
-use Jojomi\Typer\Arry;
+use Jojomi\Dbl\Client\Client;use Jojomi\Dbl\Statement\Field;use Jojomi\Dbl\Statement\Statement;use Jojomi\Dbl\Statement\StatementBuilder;use Jojomi\Dbl\Statement\Table;use Jojomi\Typer\Arry;
 
 /**
  * CountQuery.

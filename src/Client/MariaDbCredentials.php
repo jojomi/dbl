@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Jojomi\Dbl;
+namespace Jojomi\Dbl\Client;
 
 use function getenv;
 

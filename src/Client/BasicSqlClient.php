@@ -2,18 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Jojomi\Dbl;
+namespace Jojomi\Dbl\Client;
 
-use Jojomi\Dbl\Query\BasicDeleteQuery;
-use Jojomi\Dbl\Query\BasicInsertQuery;
-use Jojomi\Dbl\Query\Query;
-use Jojomi\Dbl\Statement\DeleteStatement;
-use Jojomi\Dbl\Statement\InsertStatement;
-use PDO;
-use PDOException;
-use RuntimeException;
-use function getenv;
-use function sprintf;
+use Jojomi\Dbl\Query\BasicDeleteQuery;use Jojomi\Dbl\Query\BasicInsertQuery;use Jojomi\Dbl\Query\Query;use Jojomi\Dbl\Statement\DeleteStatement;use Jojomi\Dbl\Statement\InsertStatement;use PDO;use PDOException;use RuntimeException;use function sprintf;
 
 /**
  * BasicSqlClient.

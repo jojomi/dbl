@@ -4,14 +4,7 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client;
-use Jojomi\Typer\Arry;
-use PDO;
-use PDOException;
-use RuntimeException;
-use Webmozart\Assert\Assert;
-use function json_encode;
-use function sprintf;
+use Jojomi\Dbl\Client\Client;use Jojomi\Typer\Arry;use PDO;use PDOException;use RuntimeException;use Webmozart\Assert\Assert;use function json_encode;use function sprintf;
 
 /**
  * SelectMapQuery.
@@ -44,7 +37,6 @@ abstract class SelectMapQuery extends SelectQuery
             }
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            Assert::isArray($rows);
 
             foreach ($rows as $row) {
                 $row = Arry::asStringMap($row);

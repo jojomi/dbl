@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
-use function array_map;
+use Jojomi\Dbl\SqlStyle;use function array_map;
 use function DeepCopy\deep_copy;
 use function implode;
 use function is_string;
@@ -14,12 +14,9 @@ use function sprintf;
 /**
  * DeleteStatement.
  */
-final class DeleteStatement implements Statement
+final class DeleteStatement extends BaseStatement
 {
-    /**
-     * @var array<\Jojomi\Dbl\Statement\Table> $from
-     */
-    private array $from = [];
+    private ?Table $from = null;
 
     /**
      * @var array<\Jojomi\Dbl\Statement\Order> $orderBys
@@ -69,7 +66,7 @@ final class DeleteStatement implements Statement
             $table = Table::create($table);
         }
 
-        $this->from[] = $table;
+        $this->from = $table;
 
         return $this;
     }
@@ -145,9 +142,11 @@ final class DeleteStatement implements Statement
         return $this;
     }
 
-    public function render(bool $omitSemicolon = false): string
+    public function render(?SqlStyle $sqlStyle = null, bool $omitSemicolon = false): string
     {
-        if (count($this->from) === 0) {
+        $sqlStyle ??= $this->getRenderStyle();
+
+        if ($this->from === null) {
             throw new InvalidStatementException('missing FROM on statement');
         }
 
@@ -156,24 +155,45 @@ final class DeleteStatement implements Statement
             throw new InvalidArgumentException(
                 sprintf(
                     "SafeGuard: This query might delete all rows in %s. Either call all(), specify conditions using where(), or call limit()",
-                    implode(", ", array_map(static fn (Table $table) => $table->getDefinition(), $this->from)),
+                    $this->from->getDefinition($sqlStyle),
                 ),
             );
         }
 
         $s = 'DELETE FROM ';
-        $s .= implode(', ', array_map(static fn (Table $t) => $t->getDefinition(), $this->from));
+        $s .= $this->from->getDefinition($sqlStyle);
         if (count($this->joins) > 0) {
-            $s .= ' ' . implode(' ', array_map(static fn (Join $j) => $j->render(), $this->joins));
+            $s .= ' ' . implode(' ', array_map(static fn (Join $j) => $j->render($sqlStyle), $this->joins));
         }
         if ($this->condition !== null) {
-            $s .= ' WHERE ' . $this->condition->render();
+            $s .= ' WHERE ' . $this->condition->render($sqlStyle);
         }
-        if (count($this->orderBys) > 0) {
-            $s .= ' ORDER BY ' . implode(', ', array_map(static fn (Order $o) => $o->render(), $this->orderBys));
-        }
-        if ($this->limit !== null) {
-            $s .= ' LIMIT ' . $this->limit;
+
+        if ($sqlStyle === SqlStyle::MariaDb) {
+            if (count($this->orderBys) > 0) {
+                $s .= ' ORDER BY ' . implode(', ', array_map(static fn (Order $o) => $o->render($sqlStyle), $this->orderBys));
+            }
+            if ($this->limit !== null) {
+                $s .= ' LIMIT ' . $this->limit;
+            }
+        } elseif ($sqlStyle === SqlStyle::Postgres) {
+            $needsSubselect = false;
+            $subSelect = SelectStatement::create()
+                ->from($this->from)
+                ->fields('ctid')
+            ;
+            if (count($this->orderBys) > 0) {
+                $needsSubselect = true;
+                $subSelect->orderBy(...$this->orderBys);
+            }
+            if ($this->limit !== null) {
+                $needsSubselect = true;
+                $subSelect->limit($this->limit);
+            }
+
+            if ($needsSubselect) {
+                $s .= sprintf(' WHERE "ctid" IN (%s)', $subSelect->render($sqlStyle, omitSemicolon: true));
+            }
         }
 
         if ($omitSemicolon) {
