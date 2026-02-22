@@ -246,6 +246,6 @@ final class SelectStatement extends BaseStatement
 
     public function __toString(): string
     {
-        return $this->render();
+        return $this->render(SqlStyle::MariaDb);
     }
 }
