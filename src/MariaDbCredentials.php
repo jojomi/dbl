@@ -7,9 +7,9 @@ namespace Jojomi\Dbl;
 use function getenv;
 
 /**
- * Credentials.
+ * MariaDbCredentials.
  */
-final readonly class Credentials
+final readonly class MariaDbCredentials
 {
 
     private function __construct(public string $hostname, public string $username, public string $password, public string $database)
@@ -41,7 +41,7 @@ final readonly class Credentials
 
         $database = getenv('MARIADB_DATABASE');
         if ($database === false || $database === '') {
-            $database = 'mny';
+            $database = '';
         }
 
         return self::create($hostname, $user, $password, $database);
