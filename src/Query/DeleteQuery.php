@@ -4,7 +4,8 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client\Client;use Jojomi\Dbl\Statement\DeleteStatement;
+use Jojomi\Dbl\Client\Client;
+use Jojomi\Dbl\Statement\DeleteStatement;
 
 /**
  * DeleteQuery.

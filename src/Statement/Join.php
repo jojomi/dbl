@@ -85,10 +85,10 @@ final readonly class Join
         }
 
         return sprintf(
-            '%s (%s) %s ON %s',
+            '%s (%s) %sON %s',
             $this->type->value,
             $this->source->render($sqlStyle, omitSemicolon: true),
-            Escaper::joinAlias($this->alias, $sqlStyle),
+            ($this->alias === null ? '' : trim(Escaper::joinAlias($this->alias, $sqlStyle))) . ' ',
             $this->condition->render($sqlStyle),
         );
     }
