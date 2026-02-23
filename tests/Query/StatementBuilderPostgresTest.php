@@ -7,7 +7,7 @@ namespace Jojomi\Dbl\Tests\Query;
 use Jojomi\Dbl\SqlStyle;use Jojomi\Dbl\Statement\AndCondition;
 use Jojomi\Dbl\Statement\Comparison;
 use Jojomi\Dbl\Statement\ComparisonType;
-use Jojomi\Dbl\Statement\Eq;
+use Jojomi\Dbl\Statement\CountField;use Jojomi\Dbl\Statement\Eq;
 use Jojomi\Dbl\Statement\Field;
 use Jojomi\Dbl\Statement\FieldComparisonParam;
 use Jojomi\Dbl\Statement\In;
@@ -15,7 +15,7 @@ use Jojomi\Dbl\Statement\IsNotNull;
 use Jojomi\Dbl\Statement\IsNull;
 use Jojomi\Dbl\Statement\Join;
 use Jojomi\Dbl\Statement\JoinType;
-use Jojomi\Dbl\Statement\NamedParam;
+use Jojomi\Dbl\Statement\MaxField;use Jojomi\Dbl\Statement\MinField;use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\NotIn;
 use Jojomi\Dbl\Statement\OrCondition;
 use Jojomi\Dbl\Statement\Order;
@@ -532,6 +532,14 @@ class StatementBuilderPostgresTest extends TestCase
                 ->limit(19)
             ,
             'UPDATE "books" SET "author" = :author WHERE "ctid" IN (SELECT "ctid" FROM "books" ORDER BY "id" DESC LIMIT 19);',
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->from(Table::create('share_prices'))
+                ->fields(CountField::create('id', 'count', raw: true), MinField::create('date', 'oldest', raw: true), MaxField::create('date', 'youngest', raw: true))
+            ,
+            'SELECT COUNT("id") AS "count", MIN("date") AS "oldest", MAX("date") AS "youngest" FROM "share_prices";',
         ];
     }
 }

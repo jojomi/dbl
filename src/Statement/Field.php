@@ -15,12 +15,12 @@ use function sprintf;
 readonly class Field
 {
 
-    private function __construct(private string $name, private ?string $alias, private ?Table $table, private bool $raw)
+    protected function __construct(protected string $name, protected ?string $alias, protected ?Table $table, protected bool $raw)
     {
         // NOOP
     }
 
-    public static function create(string|self $name, ?string $alias = null, Table|string|null $table = null, bool $raw = false): self
+    public static function create(string|self $name, ?string $alias = null, Table|string|null $table = null, bool $raw = false): static
     {
         if (!is_string($name)) {
             return $name;
@@ -34,7 +34,7 @@ readonly class Field
             $table = Table::create($table);
         }
 
-        return new self($name, alias: $alias, table: $table, raw: $raw);
+        return new static($name, alias: $alias, table: $table, raw: $raw);
     }
 
     public function getDefinition(SqlStyle $sqlStyle): string
@@ -64,7 +64,7 @@ readonly class Field
             $tableString = $table->getPrefix($sqlStyle) . '.';
         }
 
-        return sprintf('%s%s', $tableString, $this->alias !== null ? $this->escape($this->alias, $sqlStyle) : $this->getName($sqlStyle));
+        return sprintf('%s%s', $tableString, $this->alias !== null ? Escaper::fieldAlias($this->alias, $sqlStyle) : $this->getName($sqlStyle));
     }
 
     public function getRawName(): string
@@ -82,22 +82,12 @@ readonly class Field
         return new self(name: $this->name, alias: $this->alias, table: $this->table ?? $table, raw: $this->raw);
     }
 
-    private function getName(SqlStyle $sqlStyle): string
+    protected function getName(SqlStyle $sqlStyle): string
     {
         if ($this->raw) {
             return $this->name;
         }
 
-        return $this->escape($this->name, $sqlStyle);
+        return Escaper::fieldName($this->name, $sqlStyle);
     }
-
-    private function escape(string $input, SqlStyle $sqlStyle): string
-    {
-        if ($sqlStyle === SqlStyle::MariaDb) {
-            return sprintf('`%s`', $input);
-        }
-
-        return sprintf('"%s"', $input);
-    }
-
 }

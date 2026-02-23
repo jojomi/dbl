@@ -108,10 +108,15 @@ abstract class BaseQuery implements Query
 
     public function __toString(): string
     {
+        $query = $this->getQuery();
+        if ($query instanceof Statement) {
+            $query = $query->render(SqlStyle::MariaDb);
+        }
+
         return sprintf(
             '[%s] %s, parameters: %s',
             static::class,
-            $this->getQuery(),
+            $query,
             print_r($this->params, true),
         );
     }

@@ -42,14 +42,14 @@ abstract class BasicSqlClient implements Client
 
     public function executeStatement(DeleteStatement|InsertStatement $statement): void
     {
+        $sqlStyle = $this->getSqlStyle();
         try {
-            $renderStyle = $this->getSqlStyle();
             match (true) {
-                $statement instanceof DeleteStatement => $this->execute(BasicDeleteQuery::fromStatement($statement->setRenderStyle($renderStyle))),
-                $statement instanceof InsertStatement => $this->execute(BasicInsertQuery::fromStatement($statement->setRenderStyle($renderStyle))),
+                $statement instanceof DeleteStatement => $this->execute(BasicDeleteQuery::fromStatement($statement->setRenderStyle($sqlStyle))),
+                $statement instanceof InsertStatement => $this->execute(BasicInsertQuery::fromStatement($statement->setRenderStyle($sqlStyle))),
             };
         } catch (PDOException $e) {
-            throw new RuntimeException(sprintf("Query failed: %s\n%s", $e->getMessage(), $statement), previous: $e);
+            throw new RuntimeException(sprintf("Query failed: %s\n%s", $e->getMessage(), $statement->render($sqlStyle)), previous: $e);
         }
     }
 

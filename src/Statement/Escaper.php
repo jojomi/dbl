@@ -31,4 +31,9 @@ class Escaper {
     {
         return self::tableAlias($alias, $sqlStyle);
     }
+
+    public static function fieldName(string $name, SqlStyle $sqlStyle): string
+    {
+        return self::tableAlias($name, $sqlStyle);
+    }
 }
