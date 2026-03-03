@@ -4,7 +4,15 @@ declare(strict_types = 1);
 
 namespace Jojomi\Dbl\Query;
 
-use Jojomi\Dbl\Client\Client;use Jojomi\Typer\Arry;use PDO;use PDOException;use RuntimeException;use Webmozart\Assert\Assert;use function json_encode;use function sprintf;
+use Jojomi\Dbl\Client\Client;
+use Jojomi\Dbl\Statement\Statement;
+use Jojomi\Typer\Arry;
+use PDO;
+use PDOException;
+use RuntimeException;
+
+use function json_encode;
+use function sprintf;
 
 /**
  * SelectMapQuery.
@@ -43,11 +51,15 @@ abstract class SelectMapQuery extends SelectQuery
                 $this->addRowToResult($result, $row, $client);
             }
         } catch (PDOException $x) {
+            $query = $this->getQuery();
+            if ($query instanceof Statement) {
+                $query = $query->render($client->getSqlStyle());
+            }
             throw new RuntimeException(sprintf(
                 '%s: %s (query: %s, params: %s)',
                 static::class,
                 $x->getMessage(),
-                $this->getQuery(),
+                $query,
                 json_encode($this->params) ?: '?',
             ), previous: $x);
         } finally {

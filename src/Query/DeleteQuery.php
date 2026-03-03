@@ -12,10 +12,21 @@ use Jojomi\Dbl\Statement\DeleteStatement;
  *
  * @extends \Jojomi\Dbl\Query\BaseQuery<void>
  */
-abstract class DeleteQuery extends BaseQuery
+class DeleteQuery extends BaseQuery
 {
+    private function __construct(protected readonly DeleteStatement $statement)
+    {
+        // NOOP
+    }
 
-    abstract protected function getQuery(): DeleteStatement;
+    public static function fromStatement(DeleteStatement $statement): self
+    {
+        return new self($statement);
+    }
+
+    protected function getQuery(): DeleteStatement {
+        return $this->statement;
+    }
 
     public function execute(Client $client): void
     {

@@ -6,7 +6,7 @@ namespace Jojomi\Dbl\Query;
 
 use DateTimeInterface;
 use Jojomi\Dbl\SqlStyle;
-use Jojomi\Dbl\Statement\NamedParam;
+use Jojomi\Dbl\Statement\Escaper;use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\Statement;
 use PDO;
 use PDOStatement;
@@ -92,7 +92,7 @@ abstract class BaseQuery implements Query
 
     protected function tableString(string $tableName): string
     {
-        return sprintf('`%s`', $tableName);
+        return Escaper::tableName($tableName);
     }
 
     protected function columnString(string $columnName): string
@@ -108,9 +108,14 @@ abstract class BaseQuery implements Query
 
     public function __toString(): string
     {
+        return $this->printFor(SqlStyle::MariaDb);
+    }
+
+    public function printFor(SqlStyle $sqlStyle): string
+    {
         $query = $this->getQuery();
         if ($query instanceof Statement) {
-            $query = $query->render(SqlStyle::MariaDb);
+            $query = $query->render($sqlStyle);
         }
 
         return sprintf(
