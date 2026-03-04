@@ -37,7 +37,7 @@ readonly class Field
         return new static($name, alias: $alias, table: $table, raw: $raw);
     }
 
-    public function getDefinition(SqlStyle $sqlStyle): string
+    public function getNameWithTable(SqlStyle $sqlStyle): string
     {
         $name = $this->getName($sqlStyle);
 
@@ -45,8 +45,15 @@ readonly class Field
             $name = $this->table->getPrefix($sqlStyle) . '.' . $name;
         }
 
+        return $name;
+    }
+
+    public function getDefinition(SqlStyle $sqlStyle): string
+    {
+        $name = $this->getNameWithTable($sqlStyle);
+
         if ($this->alias === null) {
-            return sprintf('%s', $name);
+            return $name;
         }
 
         return sprintf("%s AS %s", $name, Escaper::fieldAlias($this->alias, $sqlStyle));
@@ -77,9 +84,9 @@ readonly class Field
         return $this->table;
     }
 
-    public function withTable(Table $table): self
+    public function withTable(Table $table): static
     {
-        return new self(name: $this->name, alias: $this->alias, table: $this->table ?? $table, raw: $this->raw);
+        return new static(name: $this->name, alias: $this->alias, table: $this->table ?? $table, raw: $this->raw);
     }
 
     protected function getName(SqlStyle $sqlStyle): string

@@ -5,7 +5,7 @@ declare(strict_types = 1);
 namespace Jojomi\Dbl\Statement;
 
 use InvalidArgumentException;
-use Jojomi\Dbl\SqlStyle;use function explode;
+use Jojomi\Dbl\SqlStyle;use Override;use function explode;
 use function is_string;
 use function sprintf;
 
@@ -19,8 +19,9 @@ readonly class MinField extends Field
         return parent::create($name, $alias, $table, $raw);
     }
 
-    protected function getName(SqlStyle $sqlStyle) : string
+    #[Override]
+    public function getNameWithTable(SqlStyle $sqlStyle) : string
     {
-        return sprintf('MIN(%s)', Escaper::fieldName(parent::getName($sqlStyle), $sqlStyle));
+        return sprintf('MIN(%s)', parent::getNameWithTable($sqlStyle));
     }
 }

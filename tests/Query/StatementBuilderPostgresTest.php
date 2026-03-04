@@ -537,9 +537,18 @@ class StatementBuilderPostgresTest extends TestCase
         yield [
             StatementBuilder::select()
                 ->from(Table::create('share_prices'))
-                ->fields(CountField::create('id', 'count', raw: true), MinField::create('date', 'oldest', raw: true), MaxField::create('date', 'youngest', raw: true))
+                ->fields(CountField::create('id', 'count', raw: true), MinField::create('date', 'oldest'), MaxField::create('date', 'youngest'))
             ,
             'SELECT COUNT("id") AS "count", MIN("date") AS "oldest", MAX("date") AS "youngest" FROM "share_prices";',
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->fromLocked('share_prices')
+                ->fields('share_id', MaxField::create('date', alias: 'latest_date'))
+                ->groupBy('share_id')
+            ,
+            'SELECT "share_prices"."share_id", MAX("share_prices"."date") AS "latest_date" FROM "share_prices" GROUP BY "share_prices"."share_id";',
         ];
     }
 }

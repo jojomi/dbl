@@ -15,7 +15,7 @@ use Jojomi\Dbl\Statement\IsNotNull;
 use Jojomi\Dbl\Statement\IsNull;
 use Jojomi\Dbl\Statement\Join;
 use Jojomi\Dbl\Statement\JoinType;
-use Jojomi\Dbl\Statement\NamedParam;
+use Jojomi\Dbl\Statement\MaxField;use Jojomi\Dbl\Statement\NamedParam;
 use Jojomi\Dbl\Statement\NotIn;
 use Jojomi\Dbl\Statement\OrCondition;
 use Jojomi\Dbl\Statement\Order;
@@ -537,6 +537,15 @@ class StatementBuilderMariaDbTest extends TestCase
                 ->limit(19)
             ,
             'UPDATE `books` SET `author` = :author ORDER BY `id` DESC LIMIT 19;',
+        ];
+
+        yield [
+            StatementBuilder::select()
+                ->fromLocked('share_prices')
+                ->fields('share_id', MaxField::create('date', alias: 'latest_date'))
+                ->groupBy('share_id')
+            ,
+            'SELECT `share_prices`.`share_id`, MAX(`share_prices`.`date`) AS `latest_date` FROM `share_prices` GROUP BY `share_prices`.`share_id`;',
         ];
     }
 }
