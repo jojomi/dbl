@@ -39,7 +39,7 @@ final readonly class PostgresCredentials
             $password = '';
         }
 
-        $database = getenv('POSTGRES_DATABASE');
+        $database = getenv('POSTGRES_DB');
         if ($database === false || $database === '') {
             $database = '';
         }

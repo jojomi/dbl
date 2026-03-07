@@ -52,7 +52,7 @@ final class MariaDbClient extends BasicSqlClient
                 ],
             );
         } catch (PDOException $e) {
-            throw new RuntimeException('Could not connect to database: ' . $e->getMessage());
+            throw new RuntimeException(sprintf('Could not connect to database (DSN: %s): %s', $dsn, $e->getMessage()), previous: $e);
         }
 
         return $this->connection;

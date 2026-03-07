@@ -48,7 +48,7 @@ final class PostgresClient extends BasicSqlClient
                 ],
             );
         } catch (PDOException $e) {
-            throw new RuntimeException('Could not connect to database: ' . $e->getMessage(), previous: $e);
+            throw new RuntimeException(sprintf('Could not connect to database (DSN: %s): %s', $dsn, $e->getMessage()), previous: $e);
         }
 
         return $this->connection;
