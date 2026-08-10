@@ -67,10 +67,10 @@ final class ValueTest extends TestCase
     /** @return iterable<string, array{mixed, string}> */
     public static function postgresValueProvider(): iterable
     {
-        yield 'string' => ['test', "'test'"];
-        yield 'escaped quote' => ["escaped'quote", "'escaped''quote'"];
-        // Postgres standard_conforming_strings: backslashes and double quotes are literal, not escape sequences.
-        yield 'json context' => ['{"success":7,"failure":0}', "'{\"success\":7,\"failure\":0}'"];
-        yield 'backslash' => ['a\\b', "'a\\b'"];
+        yield 'string' => ['test', "E'test'"];
+        yield 'escaped quote' => ["escaped'quote", "E'escaped''quote'"];
+        // E'' escape strings: double quotes stay literal, but backslashes must be doubled.
+        yield 'json context' => ['{"success":7,"failure":0}', "E'{\"success\":7,\"failure\":0}'"];
+        yield 'backslash' => ['a\\b', "E'a\\\\b'"];
     }
 }

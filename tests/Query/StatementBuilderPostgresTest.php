@@ -136,7 +136,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->from('articles')
                 ->fields('id')
                 ->where(Comparison::of('name', ComparisonType::equal, 'Michael')),
-            "SELECT \"id\" FROM \"articles\" WHERE \"name\" = 'Michael';",
+            "SELECT \"id\" FROM \"articles\" WHERE \"name\" = E'Michael';",
         ];
 
         yield [
@@ -188,7 +188,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(In::create('name', ['ab', 2])),
-            'SELECT "articles"."id" FROM "articles" WHERE "articles"."name" IN (\'ab\', 2);',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."name" IN (E\'ab\', 2);',
         ];
 
         yield [
@@ -204,7 +204,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(NotIn::create('name', ['ab', 2])),
-            'SELECT "articles"."id" FROM "articles" WHERE "articles"."name" NOT IN (\'ab\', 2);',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."name" NOT IN (E\'ab\', 2);',
         ];
 
         yield [
@@ -221,7 +221,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->fields('id')
                 ->where(Eq::of('id', 1))
                 ->where(Eq::of('name', 'Adam')),
-            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND "articles"."name" = \'Adam\';',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND "articles"."name" = E\'Adam\';',
         ];
 
         yield [
@@ -229,7 +229,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(AndCondition::create(Eq::of('id', 1), Eq::of('name', 'Adam'))),
-            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND "articles"."name" = \'Adam\';',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND "articles"."name" = E\'Adam\';',
         ];
 
         yield [
@@ -237,7 +237,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->fromLocked('articles')
                 ->fields('id')
                 ->where(OrCondition::create(Eq::of('id', 1), Eq::of('name', 'Adam'))),
-            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 OR "articles"."name" = \'Adam\';',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 OR "articles"."name" = E\'Adam\';',
         ];
 
         yield [
@@ -246,7 +246,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->fields('id')
                 ->where(Eq::of('id', 1))
                 ->where(OrCondition::create(Eq::of('id', 17), Eq::of('name', 'Adam'))),
-            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND ("articles"."id" = 17 OR "articles"."name" = \'Adam\');',
+            'SELECT "articles"."id" FROM "articles" WHERE "articles"."id" = 1 AND ("articles"."id" = 17 OR "articles"."name" = E\'Adam\');',
         ];
 
         yield [
@@ -431,7 +431,7 @@ class StatementBuilderPostgresTest extends TestCase
                     'title' => 'John Doe - My Memories',
                 ])
             ,
-            'INSERT INTO "articles" ("title") VALUES (\'John Doe - My Memories\');',
+            'INSERT INTO "articles" ("title") VALUES (E\'John Doe - My Memories\');',
         ];
 
         yield [
@@ -471,7 +471,7 @@ class StatementBuilderPostgresTest extends TestCase
                     'title' => 'Whatever is important',
                 ])
             ,
-            'INSERT INTO "articles" ("title", "date") VALUES (\'Whatever you like\', \'2024-12-31\'), (\'Whatever is important\', \'2025-01-01\');',
+            'INSERT INTO "articles" ("title", "date") VALUES (E\'Whatever you like\', E\'2024-12-31\'), (E\'Whatever is important\', E\'2025-01-01\');',
         ];
 
         yield [
@@ -481,7 +481,7 @@ class StatementBuilderPostgresTest extends TestCase
                     'title' => "It's about time",
                 ])
             ,
-            'INSERT INTO "articles" ("title") VALUES (\'It\'\'s about time\');',
+            'INSERT INTO "articles" ("title") VALUES (E\'It\'\'s about time\');',
         ];
 
         yield [
@@ -492,14 +492,14 @@ class StatementBuilderPostgresTest extends TestCase
                     'title' => "It's about time",
                 ])
             ,
-            'INSERT INTO "articles" ("title") VALUES (\'It\'\'s about time\') ON CONFLICT DO NOTHING;',
+            'INSERT INTO "articles" ("title") VALUES (E\'It\'\'s about time\') ON CONFLICT DO NOTHING;',
         ];
 
         yield [
             StatementBuilder::update('books')
                 ->setValue('author', 'John Doe')
             ,
-            'UPDATE "books" SET "author" = \'John Doe\';',
+            'UPDATE "books" SET "author" = E\'John Doe\';',
         ];
 
         yield [
@@ -507,7 +507,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->setValue('author', Value::create('John Doe'))
                 ->setValue(Field::create('pages'), 502)
             ,
-            'UPDATE "books" SET "author" = \'John Doe\', "pages" = 502;',
+            'UPDATE "books" SET "author" = E\'John Doe\', "pages" = 502;',
         ];
 
         yield [
@@ -515,7 +515,7 @@ class StatementBuilderPostgresTest extends TestCase
                 ->setValue('author', 'John Doe')
                 ->where(Eq::of('author', 'J.R.R. Tolkien'))
             ,
-            'UPDATE "books" SET "author" = \'John Doe\' WHERE "author" = \'J.R.R. Tolkien\';',
+            'UPDATE "books" SET "author" = E\'John Doe\' WHERE "author" = E\'J.R.R. Tolkien\';',
         ];
 
         yield [

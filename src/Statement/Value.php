@@ -66,7 +66,9 @@ readonly class Value
     private function renderString(string $value, SqlStyle $sqlStyle): string
     {
         if ($sqlStyle === SqlStyle::Postgres) {
-            return "'" . str_replace("'", "''", $value) . "'";
+            $escaped = str_replace(["\\", "'"], ["\\\\", "''"], $value);
+
+            return "E'{$escaped}'";
         }
 
         $escaped = str_replace(
