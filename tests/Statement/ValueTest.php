@@ -54,4 +54,23 @@ final class ValueTest extends TestCase
         yield 'stringable' => [new TestStringable(), "'stringable'"];
         yield 'null' => [null, 'NULL'];
     }
+
+    /**
+     * @param Value|string|int|bool|Field|NamedParam|Stringable|BackedEnum|null $input
+     */
+    #[DataProvider('postgresValueProvider')]
+    public function testRenderPostgres(mixed $input, string $expected): void
+    {
+        self::assertSame($expected, Value::create($input)->render(SqlStyle::Postgres));
+    }
+
+    /** @return iterable<string, array{mixed, string}> */
+    public static function postgresValueProvider(): iterable
+    {
+        yield 'string' => ['test', "'test'"];
+        yield 'escaped quote' => ["escaped'quote", "'escaped''quote'"];
+        // Postgres standard_conforming_strings: backslashes and double quotes are literal, not escape sequences.
+        yield 'json context' => ['{"success":7,"failure":0}', "'{\"success\":7,\"failure\":0}'"];
+        yield 'backslash' => ['a\\b', "'a\\b'"];
+    }
 }

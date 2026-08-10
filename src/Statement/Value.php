@@ -57,14 +57,18 @@ readonly class Value
             return $v->getFullName();
         }
 
-        return $this->renderString((string)$v);
+        return $this->renderString((string)$v, $sqlStyle);
     }
 
     /**
      * Render a string, quoted.
      */
-    private function renderString(string $value): string
+    private function renderString(string $value, SqlStyle $sqlStyle): string
     {
+        if ($sqlStyle === SqlStyle::Postgres) {
+            return "'" . str_replace("'", "''", $value) . "'";
+        }
+
         $escaped = str_replace(
             ["\\", "\0", "\n", "\r", "\t", "\Z", "'", "\""],
             ["\\\\", "\\0", "\\n", "\\r", "\\t", "\\Z", "''", "\\\""],
