@@ -62,8 +62,6 @@ abstract class SelectMapQuery extends SelectQuery
                 $query,
                 json_encode($this->params) ?: '?',
             ), previous: $x);
-        } finally {
-            $client->closeConnection();
         }
 
         return $result;

@@ -18,11 +18,7 @@ abstract class UpdateQuery extends BaseQuery
     public function execute(Client $client): void
     {
         $conn = $client->getConnection();
-        try {
-            $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
-        } finally {
-            $client->closeConnection();
-        }
+        $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
     }
 
     public function setValue(Field|string $field, Value|NamedParam|string|int|bool|Stringable $value): static

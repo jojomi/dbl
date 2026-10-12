@@ -8,18 +8,24 @@ use Jojomi\Dbl\SqlStyle;use PDO;use PDOException;use RuntimeException;use functi
 
 final class PostgresClient extends BasicSqlClient
 {
+    /**
+     * @param string|null $timeZone session time zone, e.g. date_default_timezone_get(): date parameters are bound
+     *                              without offset and interpreted in this zone; null keeps the server's default
+     */
     public function __construct(
         private readonly PostgresCredentials $credentials,
         private readonly ?int $port = null,
+        private readonly ?string $timeZone = null,
     ) {}
 
-    public static function fromEnv(): self
+    public static function fromEnv(?string $timeZone = null): self
     {
         $port = getenv('POSTGRES_PORT');
 
         return new self(
             PostgresCredentials::fromEnv(),
-            $port === false ? null : (int) $port
+            $port === false ? null : (int) $port,
+            $timeZone,
         );
     }
 
@@ -49,6 +55,10 @@ final class PostgresClient extends BasicSqlClient
             );
         } catch (PDOException $e) {
             throw new RuntimeException(sprintf('Could not connect to database (DSN: %s): %s', $dsn, $e->getMessage()), previous: $e);
+        }
+
+        if ($this->timeZone !== null) {
+            $this->connection->exec(sprintf('SET TIME ZONE %s', $this->connection->quote($this->timeZone)));
         }
 
         return $this->connection;

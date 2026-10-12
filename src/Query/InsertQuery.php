@@ -28,11 +28,7 @@ class InsertQuery extends BaseQuery
         }
 
         $conn = $client->getConnection();
-        try {
-            $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
-        } finally {
-            $client->closeConnection();
-        }
+        $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
     }
 
     protected function getQuery(): InsertStatement

@@ -54,8 +54,6 @@ abstract class SelectListQuery extends BaseQuery
                 $query,
                 json_encode($this->params) ?: '?',
             ));
-        } finally {
-            $client->closeConnection();
         }
 
         return $result;

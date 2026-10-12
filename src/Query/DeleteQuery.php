@@ -31,10 +31,6 @@ class DeleteQuery extends BaseQuery
     public function execute(Client $client): void
     {
         $conn = $client->getConnection();
-        try {
-            $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
-        } finally {
-            $client->closeConnection();
-        }
+        $this->getPreparedStatement($conn, $client->getSqlStyle())->execute();
     }
 }

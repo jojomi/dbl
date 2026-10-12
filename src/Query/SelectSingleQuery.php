@@ -47,8 +47,6 @@ abstract class SelectSingleQuery extends SelectQuery
                 $query,
                 json_encode($this->params) ?: '?',
             ));
-        } finally {
-            $client->closeConnection();
         }
     }
 
